@@ -60,7 +60,6 @@ char **tokenize_line(char *line)
 
 	if (!tokens)
 		return NULL;
-
 	while (line[i])
 	{
 		if (is_space(line[i]))
@@ -69,18 +68,11 @@ char **tokenize_line(char *line)
 			continue;
 		}
 		if (line[i] == '"' || line[i] == '\'')
-		{
 			tokens[j++] = extract_quoted_token(line, &i);
-		}
 		else if (is_operator(line[i]))
-		{
 			tokens[j++] = extract_operator_token(line, &i);
-		}
 		else
-		{
 			tokens[j++] = extract_simple_token(line, &i);
-		}
-
 		if (j >= size - 1)
 		{
 			size *= 2;

@@ -17,5 +17,6 @@ typedef struct s_cmd {
 // faut une structure pour l'environnement aussi jcrois
 
 char    **tokenize_line(char *line);
+t_cmd	*parse_tokens(char **tokens);
 
 #endif

@@ -5,7 +5,7 @@ LIBFT = ../greg_lib
 LIBFT_LIB = $(LIBFT)/libft.a
 
 
-SRCS = main.c tokenizer.c
+SRCS = main.c tokenizer.c parsing.c
 OBJS = $(SRCS:.c=.o)
 
 $(NAME): $(OBJS) $(LIBFT_LIB)
