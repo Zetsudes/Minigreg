@@ -5,7 +5,9 @@ LIBFT = $(LIBFT_DIR)/libft.a
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -fPIE
 
-SRC = 
+SRC = exec/test.c \
+	  exec/exec.c \
+	  exec/path.c \
 
 BONUS_SRC = 
 
@@ -19,7 +21,7 @@ all: $(NAME)
 bonus: $(BONUS_NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline -o $(NAME)
 
 $(BONUS_NAME): $(BONUS_OBJ) $(LIBFT)
 	$(CC) $(CFLAGS) $(BONUS_OBJ) $(LIBFT) -o $(BONUS_NAME)
