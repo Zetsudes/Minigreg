@@ -15,9 +15,12 @@ typedef struct s_cmd {
 	char **args;
 }       t_cmd;
 
+/********* EXEC *********/
 char    **split_args(char *line);
-char	*get_path(char *cmd, char **envp);
-void	execute_command(t_cmd *cmd, char **envp);
+char	*find_path(char **dir, char *cmd);
+char	*get_path(char *cmd, char **env);
+void	execute_command(t_cmd *cmd, char **env);
 void	free_tab(char **tab);
+char	**copy_env(char **envp);
 
 #endif

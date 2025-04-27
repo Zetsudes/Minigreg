@@ -8,6 +8,7 @@ CFLAGS = -Wall -Wextra -Werror -fPIE
 SRC = exec/test.c \
 	  exec/exec.c \
 	  exec/path.c \
+	  exec/clean.c \
 
 BONUS_SRC = 
 
