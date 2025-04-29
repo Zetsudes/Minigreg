@@ -10,62 +10,72 @@ int	is_space(char c)
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
-char *extract_quoted_token(char *line, int *i)
+char	*extract_quoted_token(char *line, int *i)
 {
-	char	quote = line[*i];
-	int		start = ++(*i);
+	char	quote;
+	int		start;
+	char	*token;
 
+	quote = line[*i];
+	start = ++(*i);
 	while (line[*i] && line[*i] != quote)
 		(*i)++;
-	
-	char *token = ft_substr(line, start, *i - start);
+	token = ft_substr(line, start, *i - start);
 	if (line[*i])
 		(*i)++;
-	return token;
+	return (token);
 }
 
-char *extract_operator_token(char *line, int *i)
+char	*extract_operator_token(char *line, int *i)
 {
-	if ((line[*i] == '<' && line[*i + 1] == '<') ||
-		(line[*i] == '>' && line[*i + 1] == '>'))
+	char	*token;
+	char	*token;
+
+	if ((line[*i] == '<' && line[*i + 1] == '<') || (line[*i] == '>' && line[*i
+			+ 1] == '>'))
 	{
-		char *token = ft_substr(line, *i, 2);
+		token = ft_substr(line, *i, 2);
 		*i += 2;
-		return token;
+		return (token);
 	}
 	else
 	{
-		char *token = ft_substr(line, *i, 1);
+		token = ft_substr(line, *i, 1);
 		(*i)++;
-		return token;
+		return (token);
 	}
 }
 
-char *extract_simple_token(char *line, int *i)
+char	*extract_simple_token(char *line, int *i)
 {
-	int start = *i;
+	int	start;
 
-	while (line[*i] && !is_space(line[*i]) && !is_operator(line[*i]) && line[*i] != '\'' && line[*i] != '"')
+	start = *i;
+	while (line[*i] && !is_space(line[*i]) && !is_operator(line[*i])
+		&& line[*i] != '\'' && line[*i] != '"')
 		(*i)++;
-
-	return ft_substr(line, start, *i - start);
+	return (ft_substr(line, start, *i - start));
 }
 
-char **tokenize_line(char *line)
+char	**tokenize_line(char *line)
 {
-	int i = 0;
-	int j = 0;
-	int size = 10;
-	char **tokens = malloc(sizeof(char*) * size);
+	int		i;
+	int		j;
+	int		size;
+	char	**tokens;
 
+	i = 0;
+	j = 0;
+	size = 10;
+	tokens = malloc(sizeof(char *) * size);
 	if (!tokens)
-		return NULL;
+		return (NULL);
 	while (line[i])
 	{
 		if (is_space(line[i]))
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		if (line[i] == '"' || line[i] == '\'')
 			tokens[j++] = extract_quoted_token(line, &i);
@@ -76,9 +86,9 @@ char **tokenize_line(char *line)
 		if (j >= size - 1)
 		{
 			size *= 2;
-			tokens = realloc(tokens, sizeof(char*) * size); // je sais pas si realloc est autorisé 
+			tokens = realloc(tokens, sizeof(char *) * size); // non autorisé
 		}
 	}
 	tokens[j] = NULL;
-	return tokens;
+	return (tokens);
 }
