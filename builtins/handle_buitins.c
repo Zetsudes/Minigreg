@@ -1,19 +1,13 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   handle_buitins.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/29 18:47:37 by zamohame          #+#    #+#             */
-/*   Updated: 2025/04/29 18:51:46 by zamohame         ###   ########.fr       */
+/*   Created: 2025/04/29 19:06:09 by zamohame          #+#    #+#             */
+/*   Updated: 2025/04/29 19:06:36 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
-
-# include "../exec/exec.h"
-# include "../greg_lib/libft.h"
-
-#endif
+#include "../include/minishell.h"
