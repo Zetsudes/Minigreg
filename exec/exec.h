@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:47:32 by zamohame          #+#    #+#             */
-/*   Updated: 2025/04/29 18:55:48 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/05/02 18:02:26 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,7 @@ void		execute_command(t_cmd *cmd, char **env);
 void		free_tab(char **tab);
 char		**copy_env(char **envp);
 void		cd(char *path);
+void		pwd(void);
+void		handle_builtin(char *cmd);
 
 #endif

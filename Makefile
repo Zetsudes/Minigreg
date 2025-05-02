@@ -9,8 +9,9 @@ SRC = exec/test.c \
 	  exec/exec.c \
 	  exec/path.c \
 	  exec/clean.c \
-	  exec/cd.c \
-	  exec/pwd.c \
+	  builtins/cd.c \
+	  builtins/pwd.c \
+	  builtins/handle_builtin.c \
 
 BONUS_SRC = 
 
