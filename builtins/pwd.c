@@ -12,12 +12,16 @@
 
 #include "../include/minishell.h"
 
-void	pwd(void)
+int	pwd(void)
 {
 	char	cwd[PATH_MAX];
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		ft_printf("s\n", cwd);
+	{
+		ft_printf("%s miaou\n", cwd);
+		return (0);
+	}
 	else
 		perror("getcwd()");
+	return (1);
 }

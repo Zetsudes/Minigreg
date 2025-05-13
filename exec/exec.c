@@ -18,7 +18,9 @@ void	execute_command(t_cmd *cmd, char **envp)
 		path = get_path(cmd->args[0], envp);
 		if (!path)
 		{
-			ft_putstr_fd("command not found\n", 2);
+			ft_putstr_fd("Command '", 2);
+			ft_putstr_fd(cmd->args[0], 2);
+			ft_putstr_fd("' not found\n", 2);
 			exit(127);
 		}
 		execve(path, cmd->args, envp);

@@ -17,12 +17,17 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		args = split_args(line);
 		cmd.args = args;
+		cmd.cmd = args[0];
 		if (args && args[0])
 		{
-			execute_command(&cmd, my_env);
+			if (is_builtin(&cmd))
+				handle_builtin(&cmd);
+			else
+				execute_command(&cmd, my_env);
 		}
 		add_history(line);
 		free(line);
+		free_tab(args);
 	}
 	free_tab(my_env);
 	printf("exit\n");

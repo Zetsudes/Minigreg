@@ -12,8 +12,47 @@
 
 #include "../include/minishell.h"
 
-void	cd(char *path)
+int	cd(char **args)
 {
-	if (chdir(path) == -1)
-		perror("chdir()");
+	char	*home;
+
+	if (!args[1])
+	{
+		home = getenv("HOME");
+		if (!home)
+		{
+			perror("getenv()");
+			return (1);
+		}
+		if (chdir(home) == -1)
+		{
+			perror("cd");
+			return (1);
+		}
+	}
+	else if (chdir(args[1]) == -1)
+	{
+		perror("cd");
+		return (1);
+	}
+	return (0);
+}
+
+int	pd(void)
+{
+	char	*old_pwd;
+
+	old_pwd = getenv("OLDPWD");
+	if (!old_pwd)
+	{
+		perror("getenv()");
+		return (1);
+	}
+	if (chdir(old_pwd) == -1)
+	{
+		perror("cd -");
+		return (1);
+	}
+	ft_printf("%s miaou\n", old_pwd);
+	return (0);
 }

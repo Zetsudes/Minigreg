@@ -13,7 +13,9 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "../exec/exec.h"
+# include "exec.h"
+# include "builtins.h"
+# include "env.h"
 # include "../greg_lib/libft.h"
 
 #endif
