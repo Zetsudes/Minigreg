@@ -14,8 +14,6 @@ typedef struct s_cmd {
     struct s_cmd *next;       // pour les pipes
 } t_cmd;
 
-// faut une structure pour l'environnement aussi jcrois
-
 char    **tokenize_line(char *line);
 t_cmd	*parse_tokens(char **tokens);
 
