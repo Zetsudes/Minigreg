@@ -12,47 +12,56 @@
 
 #include "../include/minishell.h"
 
-int	cd(char **args)
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Implementation of the cd builtin command               <3
+<3 Changes the current directory, updates PWD and OLDPWD  <3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+*/
+int	cd(char **args, t_env **env)
 {
-	char	*home;
+	char	cwd[PATH_MAX];
+	char	*old_pwd;
+	char	*target;
 
+	old_pwd = getcwd(NULL, 0); // Saves current directory before changing <3
+	if (!old_pwd)
+		return (perror("getcwd"), 1);
+	set_env_value(env, "OLDPWD", old_pwd); // Updates OLDPWD with current directory <3
 	if (!args[1])
 	{
-		home = getenv("HOME");
-		if (!home)
-		{
-			perror("getenv()");
-			return (1);
-		}
-		if (chdir(home) == -1)
-		{
-			perror("cd");
-			return (1);
-		}
+		target = get_env_value(*env, "HOME"); // No argument -> go to HOME <3
+		if (!target)
+			return (perror("cd"), free(old_pwd), 1);
 	}
-	else if (chdir(args[1]) == -1)
-	{
-		perror("cd");
-		return (1);
-	}
+	else
+		target = args[1];
+	if (chdir(target) == -1) // Changes directory <3
+		return (perror("cd"), free(old_pwd), 1);
+	if (!getcwd(cwd, sizeof(cwd)))
+		return (perror("getcwd"), free(old_pwd), 1);
+	set_env_value(env, "PWD", cwd); // Updates PWD with new directory <3
+	free(old_pwd);
 	return (0);
 }
 
-int	pd(void)
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Implementation of the cd - builtin command <3
+<3 Uses OLDPWD to know where to go back to    <3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+*/
+int	cd_dash(t_env **env)
 {
-	char	*old_pwd;
+	char	*oldpwd = get_env_value(*env, "OLDPWD");
+	char	cwd[PATH_MAX];
 
-	old_pwd = getenv("OLDPWD");
-	if (!old_pwd)
-	{
-		perror("getenv()");
-		return (1);
-	}
-	if (chdir(old_pwd) == -1)
-	{
-		perror("cd -");
-		return (1);
-	}
-	ft_printf("%s miaou\n", old_pwd);
+	if (!oldpwd || chdir(oldpwd) == -1) // Changes to previous directory <3
+		return (perror("cd -"), 1);
+	if (!getcwd(cwd, sizeof(cwd)))
+		return (perror("getcwd"), 1);
+	set_env_value(env, "PWD", cwd); // Updates PWD <3
+	ft_printf("%s miaou\n", cwd); // Prints new directory + miaou (yes we will remove it) <3
 	return (0);
 }
+

@@ -5,12 +5,17 @@ LIBFT = $(LIBFT_DIR)/libft.a
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -fPIE
 
-SRC = exec/test.c \
+SRC = env/env_list.c \
+	  env/env_utils.c \
+	  env/handle_env.c \
+	  exec/test.c \
 	  exec/exec.c \
 	  exec/path.c \
-	  exec/clean.c \
+	  exec/exec_utils.c \
+	  builtins/builtins.c \
+	  builtins/builtins_utils.c \
 	  builtins/cd.c \
-	  builtins/pwd.c \
+	  builtins/export.c \
 	  builtins/handle_builtin.c \
 
 BONUS_SRC = 

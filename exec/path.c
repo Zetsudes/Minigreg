@@ -1,28 +1,12 @@
 
 #include "../include/minishell.h"
 
-char	**copy_env(char **envp)
-{
-	int		len;
-	int		i;
-	char	**env;
-
-	i = 0;
-	len = 0;
-	while (envp[len])
-		len++;
-	env = malloc(sizeof(char *) * (len + 1));
-	if (!env)
-		return (NULL);
-	while (i < len)
-	{
-		env[i] = ft_strdup(envp[i]);
-		i++;
-	}
-	env[len] = NULL;
-	return (env);
-}
-
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Searches through PATH if command exists  <3
+<3 Helper function used in get_path() below <3 
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+*/
 char	*find_path(char **dir, char *cmd)
 {
 	int		i;
@@ -30,12 +14,12 @@ char	*find_path(char **dir, char *cmd)
 	char	*final_path;
 
 	i = 0;
-	while (dir[i])
+	while (dir[i]) // Checks each directory in PATH <3
 	{
-		tmp = ft_strjoin(dir[i], "/");
+		tmp = ft_strjoin(dir[i], "/"); // Builds full path -> directory + "/" + command <3
 		final_path = ft_strjoin(tmp, cmd);
 		free(tmp);
-		if (access(final_path, F_OK | X_OK) == 0)
+		if (access(final_path, F_OK | X_OK) == 0) // Checks if file exists and is executable <3
 			return (final_path);
 		free(final_path);
 		i++;
@@ -43,6 +27,11 @@ char	*find_path(char **dir, char *cmd)
 	return (NULL);
 }
 
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Finds the full path to a command <3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+*/
 char	*get_path(char *cmd, char **env)
 {
 	int i;
@@ -51,19 +40,19 @@ char	*get_path(char *cmd, char **env)
 	char *final_path;
 
 	i = 0;
-	if (cmd[0] == '/' || (cmd[0] == '.' && cmd[1] == '/'))
+	if (cmd[0] == '/' || (cmd[0] == '.' && cmd[1] == '/')) // Handles absolute and relative paths <3
 	{
 		if (access(cmd, F_OK | X_OK) == 0)
-			return (ft_strdup(cmd));
+			return (ft_strdup(cmd)); // Path already complete <3
 		return (NULL);
 	}
-	while (env[i] && ft_strncmp(env[i], "PATH=", 5))
+	while (env[i] && ft_strncmp(env[i], "PATH=", 5)) // Finds PATH env var
 		i++;
 	if (!env[i])
 		return (NULL);
-	path = env[i] + 5;
-	dir = ft_split(path, ':');
-	final_path = find_path(dir, cmd);
+	path = env[i] + 5; // Skips "PATH=" <3
+	dir = ft_split(path, ':'); // Splits PATH by ':' <3
+	final_path = find_path(dir, cmd); // Searches through directories <3
 	free_tab(dir);
 	return (final_path);
 }

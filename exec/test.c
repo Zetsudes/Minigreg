@@ -4,15 +4,16 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	char	**args;
-	char	**my_env;
 	t_cmd	cmd;
+	t_env	*env;
 
 	(void)argc;
 	(void)argv;
-	my_env = copy_env(envp);
+	env = init_list(envp);
+	print_lava_intro();
 	while (1)
 	{
-		line = readline("minihell$ ");
+		line = readline(ORANGE "🔥 minihell$ " RESET);
 		if (!line)
 			break ;
 		args = split_args(line);
@@ -21,15 +22,16 @@ int	main(int argc, char **argv, char **envp)
 		if (args && args[0])
 		{
 			if (is_builtin(&cmd))
-				handle_builtin(&cmd);
+				handle_builtin(&cmd, &env);
 			else
-				execute_command(&cmd, my_env);
+				execute_command(&cmd, env_to_array(env));
 		}
 		add_history(line);
 		free(line);
 		free_tab(args);
 	}
-	free_tab(my_env);
-	printf("exit\n");
+	free_env_list(env);
+	printf(RED "\n🔥 Fading back into the flames...\n\n" RESET);
 	return (0);
 }
+

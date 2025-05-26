@@ -27,10 +27,17 @@ typedef struct s_cmd
 }			t_cmd;
 
 char		**split_args(char *line);
+
+/********** PATH ***********/ 
 char		*find_path(char **dir, char *cmd);
 char		*get_path(char *cmd, char **env);
+
+/********** EXEC ***********/ 
 void		execute_command(t_cmd *cmd, char **env);
+
+/********** EXEX UTILS ***********/ 
 void		free_tab(char **tab);
-char		**copy_env(char **envp);
+
+void		print_lava_intro(void);
 
 #endif
