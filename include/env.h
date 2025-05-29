@@ -30,6 +30,8 @@ char		*ft_strjoin_3(const char *s1, const char *s2, const char *s3);
 int			add_new_env_node(t_env **env, char *key, char *value);
 int			env_list_size(t_env *env);
 int			fill_env_array(char **arr, t_env *env);
+int         ft_strcmp(const char *s1, const char *s2);
+t_env		*copy_env_list(t_env *env);
 
 
 #endif

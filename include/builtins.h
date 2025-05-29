@@ -33,5 +33,6 @@ void        append_node(t_env **env, t_env *new_node);
 int         is_valid_n_flag(const char *arg);
 int         is_numeric(const char *str);
 int	        unset_single_var(t_env **env, char *key);
+void	    swap_env_data(t_env *a, t_env *b);
 
 #endif

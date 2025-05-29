@@ -18,7 +18,7 @@
 <3 Called when a command is identified as a builtin <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-void handle_builtin(t_cmd *cmd, t_env **env)
+void handle_builtin(t_cmd *cmd, t_env **env) // 🚨 NEEDS TO BE CLEANED BECAUSE IT'S SUPER UGLY LIKE LEO 🚨
 {
 	if (ft_strncmp(cmd->cmd, "pwd", 4) == 0)
 		pwd();
@@ -44,7 +44,7 @@ void handle_builtin(t_cmd *cmd, t_env **env)
 <3 Called when a command is identified as a builtin <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-int	is_builtin(t_cmd *cmd) // 🚨 NEEDS TO BE CLEANED BECAUSE IT'S SUPER UGLY LIKE LEO 🚨
+int	is_builtin(t_cmd *cmd) // 🚨 NEEDS TO BE OPTIMISED 🚨
 {
 	static const char	*builtins[] = {
 		"pwd", "cd", "export", "unset", "env", "exit", "echo", NULL

@@ -103,3 +103,23 @@ int	unset_single_var(t_env **env, char *key)
 	}
 	return (0);
 }
+
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Swaps key and value between two environment variable structs <3
+<3 Helper function used in sort_env_list() in export.c file     <3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+*/
+void	swap_env_data(t_env *a, t_env *b)
+{
+	char	*tmp_key;
+	char	*tmp_value;
+
+	tmp_key = a->key;
+	tmp_value = a->value;
+	a->key = b->key;
+	a->value = b->value;
+	b->key = tmp_key;
+	b->value = tmp_value;
+}
+

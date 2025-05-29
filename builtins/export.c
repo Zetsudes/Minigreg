@@ -8,7 +8,7 @@
 <3 If no arguments, prints all var in alpahbetic order  <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-int	export(char **args, t_env **env)
+int	export(char **args, t_env **env) // 🚨 NEEDS TO BE CLEANED AND OPTIMISED 🚨
 {
 	int	i;
 	int	status;
@@ -33,6 +33,28 @@ int	export(char **args, t_env **env)
 		i++;
 	}
 	return (status);
+}
+
+void	sort_env_list(t_env **env)
+{
+	t_env	*curr;
+	int			swapped;
+
+	swapped = 1;
+	while (swapped)
+	{
+		curr = *env;
+		swapped = 0;
+		while (curr && curr->next)
+		{
+			if (curr->next && ft_strcmp(curr->key, curr->next->key) > 0)
+			{
+				swap_env_data(curr, curr->next);
+				swapped = 1;
+			}
+			curr = curr->next;
+		}
+	}
 }
 
 /*
@@ -63,11 +85,14 @@ int set_and_assign(char *arg, t_env **env)
 <3 Helper function used in export() above                                     <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-int	print_env_export(t_env *env) // 🚨 NEEDS TO BE SORTED IN ALPHABETIC ORDER 🚨
+int	print_env_export(t_env *env)
 {
 	t_env	*tmp;
+	t_env	*sorted;
 
-	tmp = env;
+	sorted = copy_env_list(env);
+	sort_env_list(&sorted);
+	tmp = sorted;
 	while (tmp)
 	{
 		printf("declare -x %s", tmp->key);
@@ -76,6 +101,7 @@ int	print_env_export(t_env *env) // 🚨 NEEDS TO BE SORTED IN ALPHABETIC ORDER 
 		printf("\n");
 		tmp = tmp->next;
 	}
+	free_env_list(sorted);
 	return (0);
 }
 
