@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "../include/minishell.h"
 #include <stdio.h> // For fprintf, stderr
 
 void free_cmd_list(t_cmd *cmd)

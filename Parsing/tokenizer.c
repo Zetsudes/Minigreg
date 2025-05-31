@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "../include/minishell.h"
 #include <stdio.h> // For printf used in error messages
 
 int	is_operator(char c)
