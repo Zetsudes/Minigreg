@@ -5,7 +5,20 @@ LIBFT = $(LIBFT_DIR)/libft.a
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -fPIE
 
-SRC = 
+SRC = env/env_list.c \
+	  env/env_utils.c \
+	  env/handle_env.c \
+	  exec/test.c \
+	  exec/exec.c \
+	  exec/path.c \
+	  exec/exec_utils.c \
+	  builtins/builtins.c \
+	  builtins/builtins_utils.c \
+	  builtins/cd.c \
+	  builtins/export.c \
+	  builtins/handle_builtin.c \
+	  parsing/parsing.c \
+	  parsing/tokenizer.c \
 
 BONUS_SRC = 
 
@@ -19,7 +32,7 @@ all: $(NAME)
 bonus: $(BONUS_NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline -o $(NAME)
 
 $(BONUS_NAME): $(BONUS_OBJ) $(LIBFT)
 	$(CC) $(CFLAGS) $(BONUS_OBJ) $(LIBFT) -o $(BONUS_NAME)
