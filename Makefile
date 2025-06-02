@@ -11,6 +11,7 @@ SRC = env/env_list.c \
 	  exec/test.c \
 	  exec/exec.c \
 	  exec/path.c \
+	  exec/pipe.c \
 	  exec/exec_utils.c \
 	  builtins/builtins.c \
 	  builtins/builtins_utils.c \
