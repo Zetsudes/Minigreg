@@ -17,8 +17,10 @@ SRC = env/env_list.c \
 	  builtins/cd.c \
 	  builtins/export.c \
 	  builtins/handle_builtin.c \
+	  parsing/parsing_utils.c \
 	  parsing/parsing.c \
 	  parsing/tokenizer.c \
+	  parsing/tokenizer_utils.c \
 
 BONUS_SRC = 
 
