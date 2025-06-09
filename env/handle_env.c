@@ -69,5 +69,3 @@ char	**env_to_array(t_env *env)
 	}
 	return (arr);
 }
-
-

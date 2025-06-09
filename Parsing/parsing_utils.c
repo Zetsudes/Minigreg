@@ -46,23 +46,35 @@ t_cmd	*init_cmd(void)
 	return (cmd);
 }
 
-char	**copy_args(char **tokens, int *i)
+char **copy_args(char **tokens, int *i, t_env *env)
 {
 	char	**args;
-	int		count;
+	int		start;
 	int		j;
-
-	count = count_args(tokens, *i);
-	args = malloc(sizeof(char *) * (count + 1));
+	start = *i;
+	while (tokens[*i] && ft_strcmp(tokens[*i], "|") && !is_token_operator(tokens[*i]))
+		(*i)++;
+	args = malloc(sizeof(char *) * (*i - start + 1));
 	if (!args)
 		return (NULL);
 	j = 0;
-	while (tokens[*i] && tokens[*i][0] != '|'
-		&& tokens[*i][0] != '<' && tokens[*i][0] != '>')
-		args[j++] = ft_strdup(tokens[(*i)++]);
+	while (start < *i)
+	{
+		args[j] = process_token(tokens[start], env);
+		if (!args[j])
+		{
+			while (j-- > 0)
+				free(args[j]);
+			free(args);
+			return (NULL);
+		}
+		j++;
+		start++;
+	}
 	args[j] = NULL;
 	return (args);
 }
+
 
 int	count_args(char **tokens, int i)
 {
@@ -88,4 +100,38 @@ int ft_strcmp(const char *s1, const char *s2)
         s2++;
     }
     return (*(unsigned char *)s1 - *(unsigned char *)s2);
+}
+
+#include "../include/minishell.h"
+
+char *process_token(char *token, t_env *env)
+{
+	char	*inner;
+	char	*expanded;
+	int		len;
+
+	if (!token)
+		return (NULL);
+
+	len = ft_strlen(token);
+	if (len >= 2 && token[0] == '\'' && token[len - 1] == '\'')
+	{
+		// 🟥 Quotes simples : pas d'expansion
+		return ft_substr(token, 1, len - 2);
+	}
+	else if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
+	{
+		// 🟦 Quotes doubles : expansion autorisée
+		inner = ft_substr(token, 1, len - 2);
+		if (!inner)
+			return (NULL);
+		expanded = expand_var(inner, env);
+		free(inner);
+		return (expanded);
+	}
+	else
+	{
+		// ✅ Pas de quotes : expansion normale
+		return expand_var(token, env);
+	}
 }

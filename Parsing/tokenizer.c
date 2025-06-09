@@ -1,5 +1,6 @@
 #include "../include/minishell.h"
-#include <stdio.h> // For printf used in error messages
+#include <stdlib.h>
+#include <stdio.h> // pour printf en cas d'erreur
 
 int	is_operator(char c)
 {
@@ -11,17 +12,7 @@ int	is_space(char c)
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
-int is_alpha(char c)
-{
-	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
-}
-
-int is_alnum(char c)
-{
-	return (is_alpha(c) || (c >= '0' && c <= '9'));
-}
-
-/* Fonction pour redimensionner le tableau de tokens */
+/* Redimensionne le tableau de tokens */
 char	**resize_tokens_array(char **tokens, int old_size, int new_size)
 {
 	char	**new_tokens;
@@ -40,83 +31,32 @@ char	**resize_tokens_array(char **tokens, int old_size, int new_size)
 	return (new_tokens);
 }
 
-/* Extraction d'un token entre quotes, avec gestion des backslashes */
+/* Extraction d'un token entre quotes : on garde les quotes */
 char	*extract_quoted_token(char *line, int *i)
 {
-	char	quote;
-	int		start;
-	char	*token;
-	char	*cleaned_token;
+	char	quote = line[*i];
+	int		start = *i;
 	int		j;
-	int		k;
 
-	quote = line[*i];
-	start = ++(*i);
-	j = 0;
-
-	// Find the closing quote based on quote type
-	if (quote == '\'')
+	j = start + 1;
+	while (line[j])
 	{
-		while (line[*i] && line[*i] != quote)
-			(*i)++;
+		if (line[j] == quote)
+			break;
+		// On ignore les backslashs ici, on gère ça à l'expansion
+		j++;
 	}
-	else // For double quotes
-	{
-		while (line[*i] && (line[*i] != quote || (line[*i - 1] == '\\')))
-			(*i)++;
-	}
-
-	if (line[*i] != quote)
+	if (line[j] != quote)
 	{
 		printf("❌ Erreur : Quote non fermée\n");
 		return (NULL);
 	}
-
-	token = ft_substr(line, start, *i - start);
-	if (!token) // Check if ft_substr failed
+	// On prend la chaîne entre quotes INCLUSES
+	char *token = ft_substr(line, start, j - start + 1);
+	if (!token)
 		return (NULL);
-
-	// Allocate memory for cleaned_token. 
-	// For single quotes, it's the same length as token.
-	// For double quotes, it can be shorter due to escape sequences, but ft_strlen(token) is a safe upper bound.
-	cleaned_token = malloc(sizeof(char) * (ft_strlen(token) + 1));
-	if (!cleaned_token)
-	{
-		free(token);
-		return (NULL);
-	}
-
-	j = 0; // Index for token
-	k = 0; // Index for cleaned_token
-
-	if (quote == '\'')
-	{
-		// For single quotes, copy verbatim
-		while (token[j])
-		{
-			cleaned_token[k++] = token[j++];
-		}
-	}
-	else // For double quotes
-	{
-		while (token[j])
-		{
-			if (token[j] == '\\' && token[j + 1] && (token[j + 1] == '$' || token[j + 1] == '"' || token[j + 1] == '\\'))
-			{
-				j++; // Skip the backslash
-				cleaned_token[k++] = token[j++]; // Copy the escaped character
-			}
-			else
-			{
-				cleaned_token[k++] = token[j++];
-			}
-		}
-	}
-	cleaned_token[k] = '\0';
-	free(token);
-
-	(*i)++; // Move past the closing quote
-	return (cleaned_token);
+	*i = j + 1; // Avance après la quote fermante
+	return (token);
 }
 
 char	*extract_operator_token(char *line, int *i)
@@ -138,36 +78,11 @@ char	*extract_operator_token(char *line, int *i)
 
 char	*extract_simple_token(char *line, int *i)
 {
-	int	start;
+	int	start = *i;
 
-	start = *i;
-	if (line[start] == '$')
-	{
-		(*i)++; // Move past '$'
-		if (line[*i] == '?') // Case: $?
-		{
-			(*i)++; // Move past '?'
-		}
-		else if (is_alpha(line[*i]) || line[*i] == '_') // Case: $VAR or $_VAR
-		{
-			(*i)++; // Move past the first char of VAR
-			while (line[*i] && (is_alnum(line[*i]) || line[*i] == '_'))
-			{
-				(*i)++;
-			}
-		}
-		// Else: it's just '$' or '$' followed by non-var character. 
-		// *i is already incremented past '$', so the length is *i - start.
-		// If $ is followed by non-var char, *i remains start+1.
-		// If $ is at end of line, *i remains start+1.
-	}
-	else
-	{
-		// Original logic for non-'$' prefixed tokens
-		while (line[*i] && !is_space(line[*i]) && !is_operator(line[*i])
-			   && line[*i] != '\'' && line[*i] != '"' && line[*i] != '$') // Added '$' to delimiters
-			(*i)++;
-	}
+	while (line[*i] && !is_space(line[*i]) && !is_operator(line[*i])
+		   && line[*i] != '\'' && line[*i] != '"')
+		(*i)++;
 	return (ft_substr(line, start, *i - start));
 }
 
@@ -176,9 +91,8 @@ char	**tokenize_line(char *line)
 	int		i = 0;
 	int		j = 0;
 	int		size = 10;
-	char	**tokens;
+	char	**tokens = malloc(sizeof(char *) * size);
 
-	tokens = malloc(sizeof(char *) * size);
 	if (!tokens)
 		return (NULL);
 
@@ -196,32 +110,25 @@ char	**tokenize_line(char *line)
 			if (!tokens)
 				return (NULL);
 		}
-		if (line[i] == '"' || line[i] == '\'')
+		if (line[i] == '\'' || line[i] == '"')
 		{
 			tokens[j] = extract_quoted_token(line, &i);
-			if (tokens[j] == NULL) // Error from extract_quoted_token
+			if (!tokens[j])
 			{
-				// Free all tokens allocated so far in this call to tokenize_line
-				for (int k = 0; k < j; k++) // k < j because tokens[j] is the one that failed (is NULL)
-				{
+				for (int k = 0; k < j; k++)
 					free(tokens[k]);
-				}
-				free(tokens); // Free the array of pointers
-				return (NULL); // Indicate tokenization failure
+				free(tokens);
+				return (NULL);
 			}
-			j++; // Increment j only if token extraction was successful
+			j++;
 		}
 		else if (is_operator(line[i]))
 		{
 			tokens[j] = extract_operator_token(line, &i);
-			// Assuming extract_operator_token also might fail and return NULL,
-			// and ft_substr can return NULL if malloc fails.
-			if (tokens[j] == NULL)
+			if (!tokens[j])
 			{
 				for (int k = 0; k < j; k++)
-				{
 					free(tokens[k]);
-				}
 				free(tokens);
 				return (NULL);
 			}
@@ -230,14 +137,10 @@ char	**tokenize_line(char *line)
 		else
 		{
 			tokens[j] = extract_simple_token(line, &i);
-			// Assuming extract_simple_token also might fail and return NULL,
-			// and ft_substr can return NULL if malloc fails.
-			if (tokens[j] == NULL)
+			if (!tokens[j])
 			{
 				for (int k = 0; k < j; k++)
-				{
 					free(tokens[k]);
-				}
 				free(tokens);
 				return (NULL);
 			}

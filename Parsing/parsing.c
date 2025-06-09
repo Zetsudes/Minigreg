@@ -53,8 +53,7 @@ static int	process_redirections(t_cmd *cmd, char **tokens, int *i)
 	return (0);
 }
 
-static int	process_command_segment(
-	t_cmd **head, t_cmd **curr, char **tokens, int *i)
+int	process_command_segment(t_cmd **head, t_cmd **curr, char **tokens, int *i, t_env *env)
 {
 	t_cmd	*new;
 
@@ -66,13 +65,17 @@ static int	process_command_segment(
 	else
 		(*curr)->next = new;
 	*curr = new;
-	new->args = copy_args(tokens, i);
+	new->args = copy_args(tokens, i, env); // version avec env pour expansion
+	if (!new->args)
+		return (free_cmd_list(*head), 1);
+
 	if (process_redirections(new, tokens, i))
 		return (free_cmd_list(*head), 1);
+
 	return (0);
 }
 
-t_cmd	*parse_tokens(char **tokens) // faut encore decouper 
+t_cmd *parse_tokens(char **tokens, t_env *env)
 {
 	t_cmd	*head;
 	t_cmd	*curr;
@@ -91,7 +94,7 @@ t_cmd	*parse_tokens(char **tokens) // faut encore decouper
 	}
 	while (tokens[i])
 	{
-		if (process_command_segment(&head, &curr, tokens, &i))
+		if (process_command_segment(&head, &curr, tokens, &i, env))
 			return (NULL);
 		if (tokens[i] && !ft_strcmp(tokens[i], "|"))
 		{

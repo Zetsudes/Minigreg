@@ -19,6 +19,8 @@
 # include <stdbool.h>
 # include <string.h>
 # include <sys/wait.h>
+# include "env.h"
+
 
 typedef struct s_cmd {
     char **args;              // arguments (ex: ["echo", "hello"])
@@ -31,16 +33,21 @@ typedef struct s_cmd {
 
 /********** PARSING ***********/ 
 char		**tokenize_line(char *line);
-t_cmd		*parse_tokens(char **tokens);
+t_cmd       *parse_tokens(char **tokens, t_env *env);
 void		free_cmd_list(t_cmd *cmd_list);
+char        *process_token(char *token, t_env *env);
+
+/********** EXPAND ***********/
+char		*expand_var(const char *arg, t_env *env);
+
 
 /********** PARSING UTILS ***********/
-char	    **copy_args(char **tokens, int *i);
+char        **copy_args(char **tokens, int *i, t_env *env);
 int		    count_args(char **tokens, int i);
 int		    is_token_operator(const char *token);
 int		    set_redirection(t_cmd *cmd, char *op, char *file);
 int		    ft_strcmp(const char *s1, const char *s2);
-t_cmd	*init_cmd(void);
+t_cmd       *init_cmd(void);
 
 /********** PATH ***********/ 
 char		*find_path(char **dir, char *cmd);

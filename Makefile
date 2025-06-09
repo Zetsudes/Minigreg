@@ -21,6 +21,7 @@ SRC = env/env_list.c \
 	  parsing/parsing.c \
 	  parsing/tokenizer.c \
 	  parsing/tokenizer_utils.c \
+	  parsing/expand_var.c \
 
 BONUS_SRC = 
 

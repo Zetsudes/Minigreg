@@ -29,7 +29,7 @@ int	main(int argc, char **argv, char **envp)
 			break;
 
 		tokens = tokenize_line(line);
-		cmds = parse_tokens(tokens);
+		cmds = parse_tokens(tokens, env);
 		if (cmds)
 		{
 			t_cmd *curr = cmds;
