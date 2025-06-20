@@ -20,7 +20,7 @@ int			env_builtin(t_env *env);
 int			pwd(void);
 int			unset(char **args, t_env **env);
 int			is_builtin(t_cmd *cmd);
-void		handle_builtin(t_cmd *cmd, t_env **env);
+int			handle_builtin(t_cmd *cmd, t_env **env);
 
 /********** EXPORT UTILS ***********/ 
 int			update_if_key(t_env *env, t_env *new_node);
