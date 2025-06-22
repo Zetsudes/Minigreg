@@ -3,27 +3,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-static char	*strip_quotes(char *str)
-{
-	size_t	len;
-	char	*new_str;
-	int		start;
-	int		len;
+// static char	*strip_quotes(char *str)
+//{
+//	size_t	len;
+//	char	*new_str;
 
-	len = strlen(str);
-	if ((str[0] == '\'' && str[len - 1] == '\'') ||
-		(str[0] == '"' && str[len - 1] == '"'))
-	{
-		new_str = strndup(str + 1, len - 2);
-		free(str);
-		return (new_str);
-	}
-	return (str); // Pas de quotes ou quotes mal appariées, on renvoie tel quel
-}*/
+//	len = strlen(str);
+//	if ((str[0] == '\'' && str[len - 1] == '\'') ||
+//		(str[0] == '"' && str[len - 1] == '"'))
+//	{
+//		new_str = strndup(str + 1, len - 2);
+//		free(str);
+//		return (new_str);
+//	}
+//	return (str); // Pas de quotes ou quotes mal appariées, on renvoie tel quel
+//}
+
 /* Extraction nom variable à partir d'une position (dans expand_var) */
 int	extract_varname(const char *input, int *pos, char **varname)
 {
+	int	start;
+	int	len;
+
 	start = *pos;
 	if (!input[start] || (!isalpha(input[start]) && input[start] != '_'))
 		return (0);
@@ -119,8 +120,7 @@ char	*expand_var(const char *input, t_env *env)
 			{
 				varname = NULL;
 				if (!extract_varname(input, &i, &varname))
-					append_char(&result, '$'); // Pas de var valide,
-						on garde '$'
+					append_char(&result, '$'); // Pas de var valide on garde '$'
 				else
 				{
 					val = get_env_value(env, varname);

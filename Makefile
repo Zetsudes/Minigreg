@@ -11,8 +11,7 @@ SRC = env/env_list.c \
 	  exec/test.c \
 	  exec/exec.c \
 	  exec/path.c \
-	  exec/pipe.c \
-	  exec/heredoc.c \
+	  exec/redirections.c \
 	  exec/exec_utils.c \
 	  builtins/builtins.c \
 	  builtins/builtins_utils.c \
@@ -24,6 +23,9 @@ SRC = env/env_list.c \
 	  parsing/tokenizer.c \
 	  parsing/tokenizer_utils.c \
 	  parsing/expand_var.c \
+	  pipe/clean.c \
+	  pipe/pipe_utils.c \
+	  pipe/pipe.c \
 
 BONUS_SRC = 
 

@@ -6,14 +6,15 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:47:32 by zamohame          #+#    #+#             */
-/*   Updated: 2025/06/21 16:18:33 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/06/22 19:26:08 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXEC_H
 # define EXEC_H
 
-# include "minishell.h"
+# include "env.h"
+# include "pipe.h"
 # include <linux/limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>

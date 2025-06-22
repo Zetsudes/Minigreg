@@ -44,15 +44,12 @@ void	cleanup_pipeline(t_pipeline *pipeline)
 		while (i < pipeline->cmd_count)
 		{
 			if (pipeline->cmds[i])
-				free_tab(pipeline->cmds[i]);
-					// or whatever function frees cmd[i]
+				free_cmd_list(pipeline->cmds[i]);
 			i++;
 		}
 		free(pipeline->cmds);
 		pipeline->cmds = NULL;
 	}
-	// If you use heredocs in minishell and save them to a fixed file:
-	// unlink(HEREDOC);
 }
 
 int	handle_fork_error(pid_t *pids, int i, t_pipeline *pipeline)

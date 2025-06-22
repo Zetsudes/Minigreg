@@ -3,7 +3,8 @@
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
-# include "minishell.h"
+# include "env.h"
+# include "exec.h"
 
 typedef struct s_builtin
 {
