@@ -25,7 +25,6 @@ int			is_builtin(t_cmd *cmd);
 int			handle_builtin(t_cmd *cmd, t_env **env);
 
 /********** EXPORT UTILS ***********/
-int			update_if_key(t_env *env, t_env *new_node);
 int			set_and_assign(char *arg, t_env **env);
 int			print_env_export(t_env *env);
 int			is_valid_identifier(const char *str);
@@ -35,5 +34,7 @@ void		append_node(t_env **env, t_env *new_node);
 int			is_valid_n_flag(const char *arg);
 int			is_numeric(const char *str);
 int			unset_single_var(t_env **env, char *key);
+t_env	**copy_env_to_array(t_env *env, int size);
+void	sort_env_by_key(t_env **arr, int size);
 
 #endif

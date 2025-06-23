@@ -13,7 +13,7 @@ char    *get_env_value(t_env *env, char *key)
 
     while (env)
     {
-        if (ft_strncmp(key, env->key, ft_strlen(env->key) + 1) == 0) // Checks if keys match <3
+        if (ft_strcmp(key, env->key) == 0) // Checks if keys match <3
             return (env->value);
         env = env->next;
     }
@@ -33,7 +33,7 @@ int	set_env_value(t_env **env, char *key, char *value)
 	tmp = *env;
 	while (tmp)
 	{
-		if (ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1) == 0) // Tries to find existing key <3
+		if (ft_strcmp(key, tmp->key) == 0) // Tries to find existing key <3
 		{
 			free(tmp->value); // Found -> updates its value <3
 			if (value)

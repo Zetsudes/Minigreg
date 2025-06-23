@@ -78,7 +78,7 @@ int	exit_builtin(char **args)
 		return (1);
 	}
 	if (exit_code > 255)
-		exit_code = exit_code % 256;
+		exit_code = exit_code % 256; // If number is bigger than 255, bash only keeps the lower 8 bits <3
 	exit(exit_code); // Exits with the specified code <3
 }
 

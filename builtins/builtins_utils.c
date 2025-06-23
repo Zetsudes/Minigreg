@@ -103,3 +103,21 @@ int	unset_single_var(t_env **env, char *key)
 	}
 	return (0);
 }
+
+t_env	**copy_env_to_array(t_env *env, int size)
+{
+	t_env	**arr;
+	int		i = 0;
+
+	arr = malloc(sizeof(t_env *) * (size + 1));
+	if (!arr)
+		return (NULL);
+	while (env && i < size)
+	{
+		arr[i++] = env;
+		env = env->next;
+	}
+	arr[i] = NULL;
+	return (arr);
+}
+

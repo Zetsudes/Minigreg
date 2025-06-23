@@ -63,19 +63,27 @@ int set_and_assign(char *arg, t_env **env)
 <3 Helper function used in export() above                                     <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-int	print_env_export(t_env *env) // 🚨 NEEDS TO BE SORTED IN ALPHABETIC ORDER 🚨
+int	print_env_export(t_env *env)
 {
-	t_env	*tmp;
+	t_env	**arr;
+	int		i;
+	int		size;
 
-	tmp = env;
-	while (tmp)
+	size = env_list_size(env);
+	arr = copy_env_to_array(env, size);
+	if (!arr)
+		return (1);
+	sort_env_by_key(arr, size);
+	i = 0;
+	while (i < size)
 	{
-		printf("declare -x %s", tmp->key);
-		if (tmp->value)
-			printf("=\"%s\"", tmp->value);
+		printf("declare -x %s", arr[i]->key);
+		if (arr[i]->value)
+			printf("=\"%s\"", arr[i]->value);
 		printf("\n");
-		tmp = tmp->next;
+		i++;
 	}
+	free(arr);
 	return (0);
 }
 
@@ -101,29 +109,28 @@ int	is_valid_identifier(const char *str)
 	return (1);
 }
 
-// /*
-// <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-// <3 Updates existing var if there's a key      <3
-// <3 Searches through env list for matching key <3
-// <3 Helper function used in export() above     <3
-// <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-// */
-// int update_if_key(t_env *env, t_env *new_node)
-// {
-// 	t_env   *tmp = env;
+void	sort_env_by_key(t_env **arr, int size)
+{
+	int		i;
+	int		sorted;
+	t_env	*tmp;
 
-// 	while (tmp)
-// 	{
-// 		if (ft_strncmp(tmp->key, new_node->key, ft_strlen(tmp->key) + 1) == 0) // Checks if keys match <3
-// 		{
-// 			free(tmp->value);
-// 			tmp->value = ft_strdup(new_node->value); // Updates value <3
-// 			free(new_node->key);
-// 			free(new_node->value);
-// 			free(new_node);
-// 			return (1);
-// 		}
-// 		tmp = tmp->next;
-// 	}
-// 	return (0);
-// }
+	sorted = 0;
+	while (!sorted)
+	{
+		sorted = 1;
+		i = 0;
+		while (i < size - 1)
+		{
+			if (ft_strcmp(arr[i]->key, arr[i + 1]->key) > 0)
+			{
+				tmp = arr[i];
+				arr[i] = arr[i + 1];
+				arr[i + 1] = tmp;
+				sorted = 0;
+			}
+			i++;
+		}
+	}
+}
+

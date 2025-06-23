@@ -18,11 +18,14 @@ int	main(int argc, char **argv, char **envp)
 	t_cmd	*cmds;
 	t_env	*env;
 	t_cmd	*curr;
-	int		idx;
+	int		i;
+	int		exit_status;
+	char	*exit_str;
 
 	(void)argc;
 	(void)argv;
 	env = init_list(envp);
+	set_env_value(&env, "?", "0");
 	while (1)
 	{
 		line = readline(ORANGE "🔥 minihell$ " RESET);
@@ -36,14 +39,20 @@ int	main(int argc, char **argv, char **envp)
 			if (cmds)
 			{
 				curr = cmds;
-				idx = 0;
+				i = 0;
 				while (curr)
 				{
-					printf("Command #%d:\n", idx++);
+					printf("Command #%d:\n", i++);
 					print_cmd(curr);
 					curr = curr->next;
 				}
-				execute_commands(cmds, &env);
+				exit_status = execute_commands(cmds, &env);
+				exit_str = ft_itoa(exit_status);
+				if (exit_str)
+				{
+					set_env_value(&env, "?", exit_str);
+					free(exit_str);
+				}
 				free_cmd_list(cmds);
 			}
 			else

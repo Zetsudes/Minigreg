@@ -12,7 +12,6 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 	pid_t	pid;
 	int		fd_in;
 	int		fd_out;
-	int		status;
 
 	fd_in = STDIN_FILENO;
 	fd_out = STDOUT_FILENO;
@@ -32,14 +31,7 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 	}
 	if (pid == 0)
 		run_child_process(cmd, env, fd_in, fd_out);
-	if (fd_in != STDIN_FILENO)
-		close(fd_in);
-	if (fd_out != STDOUT_FILENO)
-		close(fd_out);
-	waitpid(pid, &status, 0);
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	return (1);
+	return (run_parent_process(pid, fd_in, fd_out));
 }
 
 int	execute_commands(t_cmd *cmd_list, t_env **env)

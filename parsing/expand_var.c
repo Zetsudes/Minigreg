@@ -113,7 +113,11 @@ char	*expand_var(const char *input, t_env *env)
 			i++;
 			if (input[i] == '?')
 			{
-				append_str(&result, "0"); // TODO: mettre le vrai code de sortie
+				char *exit_code = get_env_value(env, "?");
+				if (exit_code)
+					append_str(&result, exit_code);
+				else
+					append_str(&result, "0");
 				i++;
 			}
 			else
