@@ -22,5 +22,8 @@
 # include "env.h"
 # include "exec.h"
 # include "pipe.h"
+# include "signals.h"
+
+void	init_signals(void);
 
 #endif

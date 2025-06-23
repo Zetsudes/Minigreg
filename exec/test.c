@@ -26,6 +26,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	env = init_list(envp);
 	set_env_value(&env, "?", "0");
+	init_signals();
 	while (1)
 	{
 		line = readline(ORANGE "🔥 minihell$ " RESET);

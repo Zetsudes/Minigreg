@@ -26,6 +26,7 @@ SRC = env/env_list.c \
 	  pipe/clean.c \
 	  pipe/pipe_utils.c \
 	  pipe/pipe.c \
+	  signals/signals.c \
 
 BONUS_SRC = 
 
