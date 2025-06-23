@@ -115,6 +115,8 @@ t_env   *init_list(char **envp)
     t_env   *last;
     t_env   *new_node;
 
+    if (!envp || !envp[0])
+		return (init_minimal_env());
     first = NULL;
     last = NULL;
     i = 0;

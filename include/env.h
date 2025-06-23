@@ -24,6 +24,9 @@ int					update_if_key(t_env *env, t_env *new_node);
 int					set_and_assign(char *arg, t_env **env);
 void				append_node(t_env **env, t_env *new_node);
 
+/********** MINIMAL ENVIRONMENT ***********/
+t_env	*init_minimal_env(void);
+
 /********** ENV UTILS ***********/
 void				free_env_list(t_env *head);
 char				*ft_strjoin_3(const char *s1, const char *s2,

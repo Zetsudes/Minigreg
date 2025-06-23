@@ -69,3 +69,27 @@ char	**env_to_array(t_env *env)
 	}
 	return (arr);
 }
+
+t_env	*init_minimal_env(void)
+{
+	t_env	*first;
+	t_env	*last;
+	char	cwd[PATH_MAX];
+	t_env	*node;
+
+	first = NULL;
+	last = NULL;
+	if (getcwd(cwd, sizeof(cwd)))
+	{
+		node = create_node("PWD", cwd);
+		if (node)
+			add_node(&first, &last, node);
+	}
+	node = create_node("PATH", "/usr/bin:/bin:/usr/local/bin");
+	if (node)
+		add_node(&first, &last, node);
+	node = create_node("HOME", "/home/yourname");
+	if (node)
+		add_node(&first, &last, node);
+	return (first);
+}
