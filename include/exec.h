@@ -41,6 +41,8 @@ char	*process_token(char *token, t_env *env);
 
 /********** EXPAND ***********/
 char	*expand_var(const char *arg, t_env *env);
+void    set_exit_status(int c);
+int     get_exit_status(void);
 
 /********** PARSING UTILS ***********/
 char	**copy_args(char **tokens, int *i, t_env *env);

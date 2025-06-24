@@ -1,0 +1,4 @@
+[38;5;208m🔥 minihell$ [0m|
+minishell: syntax error near unexpected token `|'
+Parser returned NULL (syntax error?)
+[38;5;208m🔥 minihell$ [0m

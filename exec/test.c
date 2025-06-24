@@ -26,6 +26,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	env = init_list(envp);
 	set_env_value(&env, "?", "0");
+	rl_catch_signals = 0;
 	init_signals();
 	while (1)
 	{
@@ -36,6 +37,12 @@ int	main(int argc, char **argv, char **envp)
 		{
 			add_history(line);
 			tokens = tokenize_line(line);
+			if (!tokens)
+			{
+				ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
+				free(line);
+				continue;
+			}
 			cmds = parse_tokens(tokens, env);
 			if (cmds)
 			{

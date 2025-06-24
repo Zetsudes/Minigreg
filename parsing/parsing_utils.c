@@ -101,10 +101,7 @@ int ft_strcmp(const char *s1, const char *s2)
     }
     return (*(unsigned char *)s1 - *(unsigned char *)s2);
 }
-
-#include "../include/minishell.h"
-
-char *process_token(char *token, t_env *env)
+char	*process_token(char *token, t_env *env)
 {
 	char	*inner;
 	char	*expanded;
@@ -112,16 +109,11 @@ char *process_token(char *token, t_env *env)
 
 	if (!token)
 		return (NULL);
-
 	len = ft_strlen(token);
 	if (len >= 2 && token[0] == '\'' && token[len - 1] == '\'')
+		return (ft_substr(token, 1, len - 2));
+	if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
 	{
-		// 🟥 Quotes simples : pas d'expansion
-		return ft_substr(token, 1, len - 2);
-	}
-	else if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
-	{
-		// 🟦 Quotes doubles : expansion autorisée
 		inner = ft_substr(token, 1, len - 2);
 		if (!inner)
 			return (NULL);
@@ -129,9 +121,5 @@ char *process_token(char *token, t_env *env)
 		free(inner);
 		return (expanded);
 	}
-	else
-	{
-		// ✅ Pas de quotes : expansion normale
-		return expand_var(token, env);
-	}
+	return (expand_var(token, env));
 }
