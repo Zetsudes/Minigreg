@@ -36,6 +36,13 @@ int	main(int argc, char **argv, char **envp)
 		{
 			add_history(line);
 			tokens = tokenize_line(line);
+			if (!tokens)
+			{
+				ft_putendl_fd("minishell: syntax error", 2);
+				set_env_value(&env, "?", "2");
+				free(line);
+				continue;
+			}
 			cmds = parse_tokens(tokens, env);
 			if (cmds)
 			{

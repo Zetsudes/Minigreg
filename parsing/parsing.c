@@ -1,47 +1,69 @@
-#include "../include/minishell.h"
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lkantzer <lkantzer@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/28 15:10:00 by lkantzer          #+#    #+#             */
+/*   Updated: 2025/06/28 15:55:00 by lkantzer         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static int	handle_pipe_errors(char **tokens, int i, t_cmd *cmd)
+#include "../include/minishell.h"
+#include <unistd.h>
+
+/* -------------------------------------------------------------------------- */
+
+/*
+**  utils : impression d’un message d’erreur « unexpected token »
+*/
+static int	print_syntax_error(const char *tok)
+{
+	const char	*prefix =
+		"minishell: syntax error near unexpected token `";
+	const char	*suffix = "'\n";
+
+	if (!tok)
+		tok = "newline";
+	write(STDERR_FILENO, prefix, ft_strlen(prefix));
+	write(STDERR_FILENO, tok, ft_strlen(tok));
+	write(STDERR_FILENO, suffix, 2);
+	return (1);
+}
+
+/* -------------------------------------------------------------------------- */
+
+static int	handle_pipe_errors(char **tk, int i, t_cmd *cmd)
 {
 	if (!cmd->args[0] && !cmd->infile && !cmd->outfile)
-	{
-		fprintf(stderr,
-			"minishell: syntax error near unexpected token `|'\n");
-		return (1);
-	}
-	if (!tokens[i] || !ft_strcmp(tokens[i], "|"))
-	{
-		fprintf(stderr,
-			"minishell: syntax error near unexpected token `|'\n");
-		return (1);
-	}
+		return (print_syntax_error("|"));
+	if (!tk[i] || !ft_strcmp(tk[i], "|"))
+		return (print_syntax_error("|"));
 	return (0);
 }
 
-static int	handle_post_redirection_errors(char *token)
+static int	handle_post_redir_err(char *tok)
 {
-	if (!token || is_token_operator(token))
-	{
-		fprintf(stderr,
-			"minishell: syntax error near unexpected token `%s'\n",
-			token ? token : "newline");
-		return (1);
-	}
+	if (!tok || is_token_operator(tok))
+		return (print_syntax_error(tok));
 	return (0);
 }
 
-static int	process_redirections(t_cmd *cmd, char **tokens, int *i)
+/* -------------------------------------------------------------------------- */
+
+static int	process_redirs(t_cmd *cmd, char **tk, int *i)
 {
 	char	*op;
 	char	*file;
 
-	while (tokens[*i] && ft_strcmp(tokens[*i], "|"))
+	while (tk[*i] && ft_strcmp(tk[*i], "|"))
 	{
-		op = tokens[*i];
-		file = tokens[*i + 1];
+		op = tk[*i];
+		file = tk[*i + 1];
 		if (is_token_operator(op) && ft_strcmp(op, "|"))
 		{
-			if (handle_post_redirection_errors(file))
+			if (handle_post_redir_err(file))
 				return (1);
 			if (!set_redirection(cmd, op, file))
 				return (1);
@@ -53,77 +75,88 @@ static int	process_redirections(t_cmd *cmd, char **tokens, int *i)
 	return (0);
 }
 
-int	process_command_segment(t_cmd **head, t_cmd **curr, char **tokens, int *i, t_env *env)
+/* -------------------------------------------------------------------------- */
+
+int	process_segment(t_cmd **head, t_cmd **cur, char **tk, int *i, t_env *env)
 {
 	t_cmd	*new;
 
 	new = init_cmd();
 	if (!new)
-		return (free_cmd_list(*head), 1);
+	{
+		free_cmd_list(*head);
+		return (1);
+	}
 	if (!*head)
 		*head = new;
 	else
-		(*curr)->next = new;
-	*curr = new;
-	new->args = copy_args(tokens, i, env); // version avec env pour expansion
+		(*cur)->next = new;
+	*cur = new;
+	new->args = copy_args(tk, i, env);
 	if (!new->args)
-		return (free_cmd_list(*head), 1);
-
-	if (process_redirections(new, tokens, i))
-		return (free_cmd_list(*head), 1);
-
+	{
+		free_cmd_list(*head);
+		return (1);
+	}
+	if (process_redirs(new, tk, i))
+	{
+		free_cmd_list(*head);
+		return (1);
+	}
 	return (0);
 }
 
-t_cmd *parse_tokens(char **tokens, t_env *env)
+/* -------------------------------------------------------------------------- */
+
+t_cmd	*parse_tokens(char **tk, t_env *env)
 {
 	t_cmd	*head;
-	t_cmd	*curr;
+	t_cmd	*cur;
 	int		i;
 
 	head = NULL;
-	curr = NULL;
+	cur = NULL;
 	i = 0;
-	if (!tokens || !tokens[0])
+	if (!tk || !tk[0])
 		return (NULL);
-	if (!ft_strcmp(tokens[0], "|"))
+	if (!ft_strcmp(tk[0], "|"))
+		return (print_syntax_error("|"), NULL);
+	while (tk[i])
 	{
-		fprintf(stderr,
-			"minishell: syntax error near unexpected token `|'\n");
-		return (NULL);
-	}
-	while (tokens[i])
-	{
-		if (process_command_segment(&head, &curr, tokens, &i, env))
+		if (process_segment(&head, &cur, tk, &i, env))
 			return (NULL);
-		if (tokens[i] && !ft_strcmp(tokens[i], "|"))
+		if (tk[i] && !ft_strcmp(tk[i], "|"))
 		{
 			i++;
-			if (handle_pipe_errors(tokens, i, curr))
+			if (handle_pipe_errors(tk, i, cur))
 				return (free_cmd_list(head), NULL);
 		}
-		else if (tokens[i])
-		{
-			fprintf(stderr,
-				"minishell: syntax error near unexpected token `%s'\n",
-				tokens[i]);
-			return (free_cmd_list(head), NULL);
-		}
+		else if (tk[i])
+			return (print_syntax_error(tk[i]), free_cmd_list(head), NULL);
 	}
 	return (head);
 }
 
-void	free_cmd_list(t_cmd *cmd_list)
-{
-	t_cmd	*tmp;
+/* -------------------------------------------------------------------------- */
 
-	while (cmd_list)
+void	free_cmd_list(t_cmd *cmd)
+{
+	t_cmd	*next;
+	int		i;
+
+	while (cmd)
 	{
-		tmp = cmd_list;
-		cmd_list = cmd_list->next;
-		free(tmp->args);
-		free(tmp->infile);
-		free(tmp->outfile);
-		free(tmp);
+		next = cmd->next;
+		if (cmd->args)
+		{
+			i = 0;
+			while (cmd->args[i])
+				free(cmd->args[i++]);
+			free(cmd->args);
+		}
+		free(cmd->infile);
+		free(cmd->outfile);
+		free(cmd);
+		cmd = next;
 	}
 }

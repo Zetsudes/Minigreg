@@ -32,11 +32,8 @@ int	add_new_env_node(t_env **env, char *key, char *value)
 
 	new = create_node(key, value);
 	if (!new)
-	{
-		free(new);
-		free_env_list(new);
-		return (0);
-	}
+		return (0); // no need to free 'new' or call free_env_list
+
 	new->next = *env;
 	*env = new;
 	return (1);
@@ -101,7 +98,6 @@ int	fill_env_array(char **arr, t_env *env)
 	while (env)
 	{
 		arr[i] = ft_strjoin_3(env->key, "=", env->value);
-		// Creates "KEY=VALUE" format <3
 		if (!arr[i])
 		{
 			while (i > 0)
