@@ -20,15 +20,15 @@ int	echo(char **args)
 	}
 	while (args[i])
 	{
-		printf("%s", args[i]);
+		write(STDOUT_FILENO, args[i], strlen(args[i]));
 		if (args[i + 1])
-			printf(" ");
+			write(STDOUT_FILENO, " ", 1);
 		i++;
 	}
 	// printf("miaou");
 		// Test to confirm this function is being executed and not execve <3
 	if (newline)
-		printf("\n");
+		write(STDOUT_FILENO, "\n", 1);
 	return (0);
 }
 

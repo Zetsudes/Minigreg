@@ -55,11 +55,14 @@ char	*find_path(char **dir, char *cmd);
 char	*get_path(char *cmd, char **env);
 
 /********** EXEC ***********/
-int		handle_heredoc(t_cmd *cmd);
 int		execute_single_command(t_cmd *cmd, t_env **env);
 int		execute_commands(t_cmd *cmd_list, t_env **env);
 void	exec_command(t_cmd *cmd, t_env **env);
 int		wait_for_children(t_pipeline *pipeline, pid_t *pids);
+int	execute_builtin(t_cmd *cmd, t_env **env, int fd_in, int fd_out);
+
+/********** REDIRECTIONS ***********/
+int		handle_heredoc(t_cmd *cmd);
 int		handle_input_redirection(t_cmd *cmd, int *fd_in);
 int		handle_output_redirection(t_cmd *cmd, int fd_in, int *fd_out);
 

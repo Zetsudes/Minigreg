@@ -23,12 +23,7 @@ int	setup_pipeline(t_cmd *cmd_list, t_pipeline *pipeline, t_env **env)
 	pipeline->env = env;
 	pipeline->pipes = NULL;
 	if (pipeline->cmd_count == 1)
-	{
-		if (is_builtin(cmd_list))
-			return (handle_builtin(cmd_list, env));
-		else
-			return (execute_single_command(cmd_list, env));
-	}
+		return (execute_single_command(cmd_list, env));
 	return (999);
 }
 

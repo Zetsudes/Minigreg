@@ -19,6 +19,8 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 		return (1);
 	if (handle_output_redirection(cmd, fd_in, &fd_out))
 		return (1);
+	if (is_builtin(cmd))
+		return (execute_builtin(cmd, env, fd_in, fd_out));
 	pid = fork();
 	if (pid < 0)
 	{
@@ -54,6 +56,35 @@ int	execute_commands(t_cmd *cmd_list, t_env **env)
 	result = wait_for_children(&pipeline, pids);
 	cleanup_pipeline(&pipeline);
 	free(pids);
+	return (result);
+}
+
+int	execute_builtin(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
+{
+	int	saved[2];
+	int	result;
+
+	saved[0] = -1;
+	saved[1] = -1;
+	if (fd_in != STDIN_FILENO && (saved[0] = dup(STDIN_FILENO)) != -1)
+		dup2(fd_in, STDIN_FILENO);
+	if (fd_out != STDOUT_FILENO && (saved[1] = dup(STDOUT_FILENO)) != -1)
+		dup2(fd_out, STDOUT_FILENO);
+	result = handle_builtin(cmd, env);
+	if (saved[0] != -1)
+	{
+		dup2(saved[0], STDIN_FILENO);
+		close(saved[0]);
+	}
+	if (saved[1] != -1)
+	{
+		dup2(saved[1], STDOUT_FILENO);
+		close(saved[1]);
+	}
+	if (fd_in != STDIN_FILENO)
+		close(fd_in);
+	if (fd_out != STDOUT_FILENO)
+		close(fd_out);
 	return (result);
 }
 
