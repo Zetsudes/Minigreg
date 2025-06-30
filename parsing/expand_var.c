@@ -1,146 +1,241 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_var.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lkantzer <lkantzer@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/28 11:10:00 by lkantzer          #+#    #+#             */
+/*   Updated: 2025/06/28 22:15:00 by lkantzer         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 
-// static char	*strip_quotes(char *str)
-//{
-//	size_t	len;
-//	char	*new_str;
-
-//	len = strlen(str);
-//	if ((str[0] == '\'' && str[len - 1] == '\'') ||
-//		(str[0] == '"' && str[len - 1] == '"'))
-//	{
-//		new_str = strndup(str + 1, len - 2);
-//		free(str);
-//		return (new_str);
-//	}
-//	return (str); // Pas de quotes ou quotes mal appariées, on renvoie tel quel
-//}
-
-/* Extraction nom variable à partir d'une position (dans expand_var) */
-int	extract_varname(const char *input, int *pos, char **varname)
+/* -------------------------------------------------------------------------- */
+/*  Helpers : append_char / append_str                                         */
+/* -------------------------------------------------------------------------- */
+static int	append_char(char **dst, char c)
 {
-	int	start;
-	int	len;
-
-	start = *pos;
-	if (!input[start] || (!isalpha(input[start]) && input[start] != '_'))
-		return (0);
-	(*pos)++;
-	while (input[*pos] && (isalnum(input[*pos]) || input[*pos] == '_'))
-		(*pos)++;
-	len = *pos - start;
-	*varname = strndup(input + start, len);
-	return (*varname != NULL);
-}
-
-/* Ajoute un caractère à une string dynamique */
-static int	append_char(char **str, char c)
-{
+	char	*new;
 	size_t	len;
-	char	*new_str;
 
-	len = *str ? strlen(*str) : 0;
-	new_str = realloc(*str, len + 2);
-	if (!new_str)
+	len = 0;
+	if (*dst)
+		len = ft_strlen(*dst);
+	new = malloc(len + 2);
+	if (!new)
 	{
-		free(*str);
-		*str = NULL;
-		return (0);
+		if (*dst)
+		{
+			free(*dst);
+			*dst = NULL;
+		}
+		return (-1);
 	}
-	new_str[len] = c;
-	new_str[len + 1] = '\0';
-	*str = new_str;
+	if (*dst)
+	{
+		ft_memcpy(new, *dst, len);
+		free(*dst);
+	}
+	new[len] = c;
+	new[len + 1] = '\0';
+	*dst = new;
 	return (1);
 }
 
-/* Ajoute une chaîne à une string dynamique */
-static int	append_str(char **str, const char *to_add)
+static int	free_and_fail(char **p)
+{
+	if (*p)
+	{
+		free(*p);
+		*p = NULL;
+	}
+	return (-1);
+}
+
+static int	append_str(char **dst, const char *add)
 {
 	size_t	len;
-	size_t	add_len;
-	char	*new_str;
+	size_t	al;
+	char	*new;
 
-	if (!to_add)
+	if (!add)
 		return (1);
-	len = *str ? strlen(*str) : 0;
-	add_len = strlen(to_add);
-	new_str = realloc(*str, len + add_len + 1);
-	if (!new_str)
+	len = *dst ? ft_strlen(*dst) : 0;
+	al = ft_strlen(add);
+	new = malloc(len + al + 1);
+	if (!new)
+		return (free_and_fail(dst));
+	if (*dst)
 	{
-		free(*str);
-		*str = NULL;
-		return (0);
+		ft_memcpy(new, *dst, len);
+		free(*dst);
 	}
-	memcpy(new_str + len, to_add, add_len);
-	new_str[len + add_len] = '\0';
-	*str = new_str;
+	ft_memcpy(new + len, add, al + 1);
+	*dst = new;
 	return (1);
 }
 
-/* Fonction principale d'expansion qui traite les quotes et les variables */
+/* -------------------------------------------------------------------------- */
+/*  Gestion du $VARIABLE / $?                                                  */
+/* -------------------------------------------------------------------------- */
+static int	handle_dollar(const char *in, int *i, char **out, t_env *env)
+{
+	char	*var;
+	char	*val;
+	int		start;
+
+	if (in[*i] == '?')
+	{
+		val = get_env_value(env, "?");
+		if (!val)
+			val = "0";
+		(*i)++;                       /* saute le caractère '?' */
+		return (append_str(out, val));
+	}
+	if (!ft_isalpha(in[*i]) && in[*i] != '_')
+		return (append_char(out, '$'));
+	start = *i;
+	while (in[*i] && (ft_isalnum(in[*i]) || in[*i] == '_'))
+		(*i)++;
+	var = ft_substr(in, start, *i - start);
+	if (!var)
+		return (-1);
+	val = get_env_value(env, var);
+	free(var);
+	if (!val)
+		val = "";
+	return (append_str(out, val));
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Contexte d’expansion                                                      */
+/* -------------------------------------------------------------------------- */
+typedef struct s_ctx
+{
+	char	**out;
+	int		sq;
+	int		dq;
+	t_env	*env;
+}	t_ctx;
+
+/* -------------------------------------------------------------------------- */
+/*  Handlers élémentaires                                                     */
+/* -------------------------------------------------------------------------- */
+static int	case_backslash(const char *in, int *i, t_ctx *c)
+{
+	if (c->sq || in[*i] != '\\' || !in[*i + 1])
+		return (0);
+	if (append_char(c->out, in[*i + 1]) == -1)
+		return (-1);
+	*i += 2;
+	return (1);
+}
+
+static int	case_single_quote(const char *in, int *i, t_ctx *c)
+{
+	if (in[*i] != '\'' || c->dq)
+		return (0);
+	c->sq = !c->sq;
+	(*i)++;
+	return (1);
+}
+
+static int	case_double_quote(const char *in, int *i, t_ctx *c)
+{
+	if (c->sq || in[*i] != '"')
+		return (0);
+	/* Ignore un guillemet précédé d'un backslash hors double-quotes */
+	if (*i > 0 && in[*i - 1] == '\\' && c->dq == 0)
+		return (0);
+	c->dq = !c->dq;
+	(*i)++;
+	return (1);
+}
+
+static int	case_dollar(const char *in, int *i, t_ctx *c)
+{
+	int	ret;
+
+	if (c->sq || in[*i] != '$')
+		return (0);
+	(*i)++;
+	ret = handle_dollar(in, i, c->out, c->env);
+	if (ret != 1)
+		return (-1);
+	return (1);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Essaye chaque handler                                                     */
+/* -------------------------------------------------------------------------- */
+static int	expv_try_cases(const char *in, int *i, t_ctx *c)
+{
+	int	r;
+
+	r = case_backslash(in, i, c);
+	if (r != 0)
+		return (r);
+	r = case_single_quote(in, i, c);
+	if (r != 0)
+		return (r);
+	r = case_double_quote(in, i, c);
+	if (r != 0)
+		return (r);
+	r = case_dollar(in, i, c);
+	if (r != 0)
+		return (r);
+	return (0);
+}
+
+static int	expv_process_char(const char *in, int *i, t_ctx *c)
+{
+	int	ret;
+
+	ret = expv_try_cases(in, i, c);
+	if (ret != 0)
+	{
+		if (ret == -1)
+			return (0);
+		return (1);
+	}
+	if (append_char(c->out, in[*i]) == -1)
+		return (0);
+	(*i)++;
+	return (1);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Boucle principale                                                         */
+/* -------------------------------------------------------------------------- */
+static int	expand_core(const char *in, char **out, t_env *env)
+{
+	t_ctx	c;
+	int		i;
+
+	c.out = out;
+	c.sq = 0;
+	c.dq = 0;
+	c.env = env;
+	i = 0;
+	while (in[i])
+		if (!expv_process_char(in, &i, &c))
+			return (0);
+	return (1);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  API publique                                                              */
+/* -------------------------------------------------------------------------- */
 char	*expand_var(const char *input, t_env *env)
 {
-	char	*result;
-	int		i;
-	int		in_single;
-	int		in_double;
-	char	*varname;
-	char	*val;
+	char	*res;
 
-	result = NULL;
-	i = 0;
-	in_single = 0;
-	in_double = 0;
 	if (!input)
 		return (NULL);
-	while (input[i])
-	{
-		if (input[i] == '\'' && !in_double)
-		{
-			in_single = !in_single;
-			i++; // On avance sans copier la quote
-		}
-		else if (input[i] == '"' && !in_single)
-		{
-			in_double = !in_double;
-			i++; // On avance sans copier la quote
-		}
-		else if (input[i] == '$' && !in_single)
-		{
-			i++;
-			if (input[i] == '?')
-			{
-				char *exit_code = get_env_value(env, "?");
-				if (exit_code)
-					append_str(&result, exit_code);
-				else
-					append_str(&result, "0");
-				i++;
-			}
-			else
-			{
-				varname = NULL;
-				if (!extract_varname(input, &i, &varname))
-					append_char(&result, '$'); // Pas de var valide on garde '$'
-				else
-				{
-					val = get_env_value(env, varname);
-					free(varname);
-					if (val)
-						append_str(&result, val);
-				}
-			}
-		}
-		else
-		{
-			append_char(&result, input[i]);
-			i++;
-		}
-		if (!result) // erreur malloc
-			break ;
-	}
-	return (result);
+	res = NULL;
+	if (!expand_core(input, &res, env))
+		res = ft_strdup("");
+	return (res);
 }

@@ -3,21 +3,21 @@
 
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Frees all memory used by the environment linked list <3                  
+<3 Frees all memory used by the environment linked list <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-void    free_env_list(t_env *head)
+void	free_env_list(t_env *head)
 {
-    t_env	*tmp;
-    
-    while (head)
-    {
-        tmp = head;
-        head = head->next;
-        free(tmp->key);
-        free(tmp->value);
-        free(tmp);
-    }
+	t_env	*tmp;
+
+	while (head)
+	{
+		tmp = head;
+		head = head->next;
+		free(tmp->key);
+		free(tmp->value);
+		free(tmp);
+	}
 }
 
 /*
@@ -32,7 +32,8 @@ int	add_new_env_node(t_env **env, char *key, char *value)
 
 	new = create_node(key, value);
 	if (!new)
-		return (0);
+		return (0); // no need to free 'new' or call free_env_list
+
 	new->next = *env;
 	*env = new;
 	return (1);
@@ -47,10 +48,13 @@ int	add_new_env_node(t_env **env, char *key, char *value)
 char	*ft_strjoin_3(const char *s1, const char *s2, const char *s3)
 {
 	char	*result;
-	size_t	len1 = ft_strlen(s1);
-	size_t	len2 = ft_strlen(s2);
-	size_t	len3 = ft_strlen(s3);
+	size_t	len1;
+	size_t	len2;
+	size_t	len3;
 
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	len3 = ft_strlen(s3);
 	result = malloc(len1 + len2 + len3 + 1); // Null terminator <3
 	if (!result)
 		return (NULL);
@@ -68,7 +72,7 @@ char	*ft_strjoin_3(const char *s1, const char *s2, const char *s3)
 */
 int	env_list_size(t_env *env)
 {
-	int	size ;
+	int	size;
 
 	size = 0;
 	while (env)
@@ -82,7 +86,7 @@ int	env_list_size(t_env *env)
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 <3 Fills array with "KEY=VALUE"                                 <3
-<3 Converts list to array                                       <3 
+<3 Converts list to array                                       <3
 <3 Helper function used in env_to_array() in handle_env.c file  <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
@@ -93,7 +97,7 @@ int	fill_env_array(char **arr, t_env *env)
 	i = 0;
 	while (env)
 	{
-		arr[i] = ft_strjoin_3(env->key, "=", env->value); // Creates "KEY=VALUE" format <3
+		arr[i] = ft_strjoin_3(env->key, "=", env->value);
 		if (!arr[i])
 		{
 			while (i > 0)
@@ -106,4 +110,3 @@ int	fill_env_array(char **arr, t_env *env)
 	arr[i] = NULL;
 	return (1);
 }
-

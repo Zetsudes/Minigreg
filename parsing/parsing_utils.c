@@ -1,14 +1,38 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lkantzer <lkantzer@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/28 10:42:00 by lkantzer          #+#    #+#             */
+/*   Updated: 2025/06/28 11:00:00 by lkantzer         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
+/*
+** is_token_operator:
+**   Retourne 1 si le token correspond à un opérateur de redirection ou de pipe,
+**   0 sinon.
+*/
 int	is_token_operator(const char *token)
 {
 	if (!token)
 		return (0);
-	return (!ft_strcmp(token, "<") || !ft_strcmp(token, ">")
-		|| !ft_strcmp(token, "<<") || !ft_strcmp(token, ">>")
+	return (!ft_strcmp(token, "<")
+		|| !ft_strcmp(token, ">")
+		|| !ft_strcmp(token, "<<")
+		|| !ft_strcmp(token, ">>")
 		|| !ft_strcmp(token, "|"));
 }
 
+/*
+** set_redirection:
+**   Renseigne les champs infile/outfile/heredoc/append du t_cmd selon l’opérateur
+**   rencontré. Renvoie 1 en cas de succès, 0 si une allocation a échoué.
+*/
 int	set_redirection(t_cmd *cmd, char *op, char *file)
 {
 	if (!ft_strcmp(op, "<"))
@@ -25,11 +49,16 @@ int	set_redirection(t_cmd *cmd, char *op, char *file)
 		cmd->append = 1;
 		cmd->outfile = ft_strdup(file);
 	}
-	if ((op[0] == '<' && !cmd->infile) || (op[0] == '>' && !cmd->outfile))
+	if ((op[0] == '<' && !cmd->infile)
+		|| (op[0] == '>' && !cmd->outfile))
 		return (0);
 	return (1);
 }
 
+/*
+** init_cmd:
+**   Alloue et initialise une structure t_cmd vide.
+*/
 t_cmd	*init_cmd(void)
 {
 	t_cmd	*cmd;
@@ -46,13 +75,21 @@ t_cmd	*init_cmd(void)
 	return (cmd);
 }
 
-char **copy_args(char **tokens, int *i, t_env *env)
+/*
+** copy_args:
+**   Copie les arguments normaux (ni opérateurs ni pipes) à partir de tokens[*i]
+**   jusqu’au prochain séparateur. Les variables sont étendues via process_token.
+**   *i est mis à jour pour pointer sur le token suivant.
+*/
+char	**copy_args(char **tokens, int *i, t_env *env)
 {
 	char	**args;
 	int		start;
 	int		j;
+
 	start = *i;
-	while (tokens[*i] && ft_strcmp(tokens[*i], "|") && !is_token_operator(tokens[*i]))
+	while (tokens[*i] && ft_strcmp(tokens[*i], "|")
+		&& !is_token_operator(tokens[*i]))
 		(*i)++;
 	args = malloc(sizeof(char *) * (*i - start + 1));
 	if (!args)
@@ -75,7 +112,11 @@ char **copy_args(char **tokens, int *i, t_env *env)
 	return (args);
 }
 
-
+/*
+** count_args:
+**   Renvoie le nombre de tokens « argument » (ni opérateurs, ni pipes)
+**   à partir de l’index i.
+*/
 int	count_args(char **tokens, int i)
 {
 	int	count;
@@ -90,48 +131,35 @@ int	count_args(char **tokens, int i)
 	return (count);
 }
 
-int ft_strcmp(const char *s1, const char *s2)
+/*
+** ft_strcmp:
+**   Version minimale de strcmp qui gère les pointeurs NULL.
+*/
+int	ft_strcmp(const char *s1, const char *s2)
 {
-    if (!s1 || !s2)
-        return (1);
-    while (*s1 && *s2 && *s1 == *s2)
-    {
-        s1++;
-        s2++;
-    }
-    return (*(unsigned char *)s1 - *(unsigned char *)s2);
+	if (!s1 || !s2)
+		return (1);
+	while (*s1 && *s2 && *s1 == *s2)
+	{
+		s1++;
+		s2++;
+	}
+	return (*(unsigned char *)s1 - *(unsigned char *)s2);
 }
 
-#include "../include/minishell.h"
-
-char *process_token(char *token, t_env *env)
+/*
+** process_token:
+**   Applique l’expansion de variable au token donné. Renvoie une chaîne
+**   dupliquée ; chaîne vide en cas d’erreur ou de NULL.
+*/
+char	*process_token(char *tok, t_env *env)
 {
-	char	*inner;
-	char	*expanded;
-	int		len;
+	char	*out;
 
-	if (!token)
-		return (NULL);
-
-	len = ft_strlen(token);
-	if (len >= 2 && token[0] == '\'' && token[len - 1] == '\'')
-	{
-		// 🟥 Quotes simples : pas d'expansion
-		return ft_substr(token, 1, len - 2);
-	}
-	else if (len >= 2 && token[0] == '"' && token[len - 1] == '"')
-	{
-		// 🟦 Quotes doubles : expansion autorisée
-		inner = ft_substr(token, 1, len - 2);
-		if (!inner)
-			return (NULL);
-		expanded = expand_var(inner, env);
-		free(inner);
-		return (expanded);
-	}
-	else
-	{
-		// ✅ Pas de quotes : expansion normale
-		return expand_var(token, env);
-	}
+	if (!tok)
+		return (ft_strdup(""));
+	out = expand_var(tok, env);
+	if (!out)
+		out = ft_strdup("");
+	return (out);
 }
