@@ -18,38 +18,31 @@ void	close_all_pipes(t_pipeline *pipeline)
 	}
 }
 
-void	cleanup_pipeline(t_pipeline *pipeline)
+void    cleanup_pipeline(t_pipeline *p)
 {
-	int	i;
+    int i;
 
-	if (pipeline->pipes)
-	{
-		i = 0;
-		while (i < pipeline->cmd_count - 1)
-		{
-			if (pipeline->pipes[i])
-			{
-				close(pipeline->pipes[i][0]);
-				close(pipeline->pipes[i][1]);
-				free(pipeline->pipes[i]);
-			}
-			i++;
-		}
-		free(pipeline->pipes);
-		pipeline->pipes = NULL;
-	}
-	if (pipeline->cmds)
-	{
-		i = 0;
-		while (i < pipeline->cmd_count)
-		{
-			if (pipeline->cmds[i])
-				free_cmd_list(pipeline->cmds[i]);
-			i++;
-		}
-		free(pipeline->cmds);
-		pipeline->cmds = NULL;
-	}
+    /* --- fermer & libérer les pipes --- */
+    if (p->pipes)
+    {
+        i = 0;
+        while (i < p->cmd_count - 1)
+        {
+            if (p->pipes[i])
+            {
+                close(p->pipes[i][0]);
+                close(p->pipes[i][1]);
+                free(p->pipes[i]);
+            }
+            i++;
+        }
+        free(p->pipes);
+        p->pipes = NULL;
+    }
+
+    /* --- libérer seulement le tableau de pointeurs, PAS les t_cmd --- */
+    free(p->cmds);
+    p->cmds = NULL;
 }
 
 int	handle_fork_error(pid_t *pids, int i, t_pipeline *pipeline)
