@@ -167,6 +167,20 @@ static int	handle_operator(const char *ln, size_t *i, t_lexer *lx)
 	return (2);
 }
 
+static int  handle_paren(const char *ln, size_t *i, t_lexer *lx)
+{
+    if (lx->st == GENERAL && (ln[*i] == '(' || ln[*i] == ')'))
+    {
+        if (!add_word(lx) || !tokens_grow(lx))
+            return (0);
+        /* on stocke le caractère tout seul comme token                       */
+        lx->tok[lx->len++] = ft_substr(ln, *i, 1);
+        (*i)++;
+        return (1);
+    }
+    return (2);
+}
+
 static int	handle_backslash(const char *ln, size_t *i, t_lexer *lx)
 {
 	if (ln[*i] == '\\' && lx->st != IN_SQ && ln[*i + 1])
@@ -246,6 +260,8 @@ static int	lex_step(const char *ln, size_t *i, t_lexer *lx)
 {
 	if (handle_space(ln, i, lx) != 2)
 		return (handle_space(ln, i, lx));
+	if (handle_paren(ln, i, lx)   != 2)
+		return handle_paren(ln, i, lx);
 	if (handle_operator(ln, i, lx) != 2)
 		return (handle_operator(ln, i, lx));
 	if (handle_backslash(ln, i, lx) != 2)

@@ -123,14 +123,38 @@ typedef struct s_ctx
 /* -------------------------------------------------------------------------- */
 /*  Handlers élémentaires                                                     */
 /* -------------------------------------------------------------------------- */
-static int	case_backslash(const char *in, int *i, t_ctx *c)
+static int  dq_backslash(const char *in, int *i, t_ctx *c)
 {
-	if (c->sq || in[*i] != '\\' || !in[*i + 1])
-		return (0);
-	if (append_char(c->out, in[*i + 1]) == -1)
-		return (-1);
-	*i += 2;
-	return (1);
+    char next = in[*i + 1];
+
+    if (next == '$' || next == '`' || next == '"' ||
+        next == '\\' || next == '\n')
+    {
+        if (append_char(c->out, next) == -1)
+            return (-1);
+        *i += 2;
+        return (1);
+    }
+    return (0);                      /* leave “\X” untouched      */
+}
+
+static int  case_backslash(const char *in, int *i, t_ctx *c)
+{
+    if (c->sq || in[*i] != '\\' || !in[*i + 1])
+        return (0);                  /* not an escape at all      */
+
+    if (c->dq)                       /* we are inside double-quotes */
+    {
+        int r = dq_backslash(in, i, c);
+        if (r)                       /* handled or errored        */
+            return (r);
+        return (0);                  /* keep the back-slash       */
+    }
+    /* outside quotes → always escape the next char               */
+    if (append_char(c->out, in[*i + 1]) == -1)
+        return (-1);
+    *i += 2;
+    return (1);
 }
 
 static int	case_single_quote(const char *in, int *i, t_ctx *c)
