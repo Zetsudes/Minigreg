@@ -18,7 +18,7 @@ int	main(int argc, char **argv, char **envp)
 	t_cmd	*cmds;
 	t_env	*env;
 	t_cmd	*curr;
-	int		i;
+	// int		i;
 	int		exit_status;
 	char	*exit_str;
 
@@ -47,11 +47,11 @@ int	main(int argc, char **argv, char **envp)
 			if (cmds)
 			{
 				curr = cmds;
-				i = 0;
+				// i = 0;
 				while (curr)
 				{
-					printf("Command #%d:\n", i++);
-					print_cmd(curr);
+					// printf("Command #%d:\n", i++);
+					// print_cmd(curr);
 					curr = curr->next;
 				}
 				exit_status = execute_commands(cmds, &env);

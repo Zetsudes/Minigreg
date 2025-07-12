@@ -94,8 +94,7 @@ int	pwd(void)
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
-		ft_printf("%s miaou\n", cwd);
-			// To make sure it's the one being called and not execve <3
+		ft_printf("%s\n", cwd);
 		return (0);
 	}
 	else

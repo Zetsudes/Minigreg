@@ -27,6 +27,12 @@ int	cd(char **args, t_env **env)
 	old_pwd = getcwd(NULL, 0); // Saves current directory before changing <3
 	if (!old_pwd)
 		return (perror("getcwd"), 1);
+	if (args[1] && args[2])
+	{
+		printf("cd: too many arguments\n");
+		free(old_pwd);
+		return (1);
+	}
 	set_env_value(env, "OLDPWD", old_pwd); // Updates OLDPWD with current directory <3
 	if (!args[1])
 	{
@@ -61,7 +67,7 @@ int	cd_dash(t_env **env)
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (perror("getcwd"), 1);
 	set_env_value(env, "PWD", cwd); // Updates PWD <3
-	ft_printf("%s miaou\n", cwd); // Prints new directory + miaou (yes we will remove it) <3
+	ft_printf("%s\n", cwd); // Prints new directory <3
 	return (0);
 }
 
