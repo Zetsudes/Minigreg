@@ -135,22 +135,20 @@ static int  dq_backslash(const char *in, int *i, t_ctx *c)
         *i += 2;
         return (1);
     }
-    return (0);                      /* leave “\X” untouched      */
+    return (0);
 }
 
 static int  case_backslash(const char *in, int *i, t_ctx *c)
 {
     if (c->sq || in[*i] != '\\' || !in[*i + 1])
-        return (0);                  /* not an escape at all      */
-
-    if (c->dq)                       /* we are inside double-quotes */
+        return (0);
+    if (c->dq)
     {
         int r = dq_backslash(in, i, c);
-        if (r)                       /* handled or errored        */
+        if (r)
             return (r);
-        return (0);                  /* keep the back-slash       */
+        return (0);
     }
-    /* outside quotes → always escape the next char               */
     if (append_char(c->out, in[*i + 1]) == -1)
         return (-1);
     *i += 2;
