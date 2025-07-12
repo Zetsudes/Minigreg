@@ -25,7 +25,8 @@ int	is_token_operator(const char *token)
 		|| !ft_strcmp(token, ">")
 		|| !ft_strcmp(token, "<<")
 		|| !ft_strcmp(token, ">>")
-		|| !ft_strcmp(token, "|"));
+		|| !ft_strcmp(token, "|")
+		|| !ft_strcmp(token, ";"));
 }
 
 /*
@@ -89,6 +90,7 @@ char	**copy_args(char **tokens, int *i, t_env *env)
 
 	start = *i;
 	while (tokens[*i] && ft_strcmp(tokens[*i], "|")
+		&& ft_strcmp(tokens[*i], ";")
 		&& !is_token_operator(tokens[*i]))
 		(*i)++;
 	args = malloc(sizeof(char *) * (*i - start + 1));
@@ -123,6 +125,7 @@ int	count_args(char **tokens, int i)
 
 	count = 0;
 	while (tokens[i] && tokens[i][0] != '|'
+		&& tokens[i][0] != ';'
 		&& tokens[i][0] != '<' && tokens[i][0] != '>')
 	{
 		count++;

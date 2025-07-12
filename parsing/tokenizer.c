@@ -14,8 +14,15 @@
 #include <stdlib.h>
 
 /* ───────── helpers basiques ───────── */
-static int	is_operator(char c) { return (c == '<' || c == '>' || c == '|'); }
-static int	is_space(char c)    { return (c == ' ' || c == '\t' || c == '\n'); }
+static int is_operator(char c)
+{
+	return (c == '<' || c == '>' || c == '|' || c == ';');
+}
+
+static int	is_space(char c)
+{
+	return (c == ' ' || c == '\t' || c == '\n'); 
+}
 
 /* ───────── builder ────────────────── */
 typedef struct s_builder

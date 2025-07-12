@@ -57,7 +57,7 @@ static int	process_redirs(t_cmd *cmd, char **tk, int *i)
 	char	*op;
 	char	*file;
 
-	while (tk[*i] && ft_strcmp(tk[*i], "|"))
+	while (tk[*i] && ft_strcmp(tk[*i], "|") && ft_strcmp(tk[*i], ";"))
 	{
 		op = tk[*i];
 		file = tk[*i + 1];
@@ -130,6 +130,12 @@ t_cmd	*parse_tokens(char **tk, t_env *env)
 			i++;
 			if (handle_pipe_errors(tk, i, cur))
 				return (free_cmd_list(head), NULL);
+		}
+		else if (tk[i] && !ft_strcmp(tk[i], ";"))
+		{
+			i++;
+			if (!tk[i] || !ft_strcmp(tk[i], ";") || !ft_strcmp(tk[i], "|"))
+				return (print_syntax_error(tk[i]), free_cmd_list(head), NULL);
 		}
 		else if (tk[i])
 			return (print_syntax_error(tk[i]), free_cmd_list(head), NULL);
