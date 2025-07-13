@@ -34,11 +34,20 @@ int	cd(char **args, t_env **env)
 		return (1);
 	}
 	set_env_value(env, "OLDPWD", old_pwd); // Updates OLDPWD with current directory <3
-	if (!args[1])
+	if (!args[1] || (args[1] && *args[1] == '\0'))
 	{
 		target = get_env_value(*env, "HOME"); // No argument -> go to HOME <3
 		if (!target)
-			return (perror("cd"), free(old_pwd), 1);
+		{
+			write(2, "cd: HOME not set\n", 17);
+			free(old_pwd);
+			return 0;
+		}
+		 if (*target == '\0')
+		{
+			free(old_pwd);
+			return 0;
+		}
 	}
 	else
 		target = args[1];

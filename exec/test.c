@@ -55,7 +55,7 @@ int	main(int argc, char **argv, char **envp)
 					print_cmd(curr);
 					curr = curr->next;
 				}
-				exit_status = execute_commands(cmds, &env);
+				exit_status = execute_command_sequence(cmds, &env);;
 				exit_str = ft_itoa(exit_status);
 				if (exit_str)
 				{

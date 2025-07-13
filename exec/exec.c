@@ -102,3 +102,36 @@ void	run_child_process(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 	}
 	exec_command(cmd, env);
 }
+
+int	execute_command_sequence(t_cmd *cmd_list, t_env **env)
+{
+	t_cmd	*start;
+	t_cmd	*end;
+	t_cmd	*next;
+	int		result = 0;
+
+	while (cmd_list)
+	{
+		start = cmd_list;
+		end = start;
+
+		// Advance until we hit a semicolon or end of list
+		while (end->next && end->cmd_separator == 0)
+			end = end->next;
+
+		// Save the rest of the list
+		next = end->next;
+
+		// Temporarily disconnect the sublist
+		end->next = NULL;
+
+		// Execute this group (pipe or single)
+		result = execute_commands(start, env);
+
+		// Restore connection for the next loop
+		end->next = next;
+		cmd_list = next;
+	}
+	return (result);
+}
+
