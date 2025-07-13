@@ -73,6 +73,7 @@ t_cmd	*init_cmd(void)
 	cmd->append = 0;
 	cmd->heredoc = 0;
 	cmd->next = NULL;
+	cmd->cmd_separator = 0;
 	return (cmd);
 }
 

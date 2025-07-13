@@ -31,6 +31,7 @@ typedef struct s_cmd
 	int append;         // 1 si >>
 	int heredoc;        // 1 si <<
 	struct s_cmd *next; // pour les pipes
+	int cmd_separator;  // pour les ; 0 ou 1
 }		t_cmd;
 
 /********** PARSING ***********/

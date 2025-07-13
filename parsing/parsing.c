@@ -133,6 +133,7 @@ t_cmd	*parse_tokens(char **tk, t_env *env)
 		}
 		else if (tk[i] && !ft_strcmp(tk[i], ";"))
 		{
+            cur->cmd_separator = 1;
 			i++;
 			if (!tk[i] || !ft_strcmp(tk[i], ";") || !ft_strcmp(tk[i], "|"))
 				return (print_syntax_error(tk[i]), free_cmd_list(head), NULL);
