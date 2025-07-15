@@ -91,5 +91,8 @@ t_env	*init_minimal_env(void)
 	node = create_node("HOME", "/home/yourname");
 	if (node)
 		add_node(&first, &last, node);
+	node = create_node("SHLVL", "1");
+	if (node)
+		add_node(&first, &last, node);
 	return (first);
 }
