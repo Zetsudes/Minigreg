@@ -88,11 +88,11 @@ static int	handle_dollar(const char *in, int *i, char **out, t_env *env)
 
 	if (in[*i] == '?')
 	{
-		val = get_env_value(env, "?");
-		if (!val)
-			val = "0";
+		// val = get_env_value(env, "?");
+		// if (!val)
+		// 	val = "0";
 		(*i)++;                       /* saute le caractère '?' */
-		return (append_str(out, val));
+		return (append_str(out, "$?"));
 	}
 	if (!ft_isalpha(in[*i]) && in[*i] != '_')
 		return (append_char(out, '$'));

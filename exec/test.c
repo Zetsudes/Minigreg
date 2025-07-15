@@ -12,16 +12,34 @@ void	print_cmd(t_cmd *cmd)
 	printf("\n");
 }
 
+static void	process_command_line(char *line, t_env **env)
+{
+	char	**tokens;
+	t_cmd	*cmds;
+
+	add_history(line);
+	tokens = tokenize_line(line);
+	if (!tokens)
+	{
+		ft_putendl_fd("minishell: syntax error", 2);
+		set_env_value(env, "?", "2");
+		return;
+	}
+	cmds = parse_tokens(tokens, *env);
+	if (cmds)
+	{
+		execute_command_sequence(cmds, env);
+		free_cmd_list(cmds);
+	}
+	else
+		ft_putstr_fd("Parser returned NULL (syntax error?)\n", 2);
+	free_tab(tokens);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
-	char	**tokens;
-	t_cmd	*cmds;
 	t_env	*env;
-	t_cmd	*curr;
-	int		i;
-	int		exit_status;
-	char	*exit_str;
 
 	(void)argc;
 	(void)argv;
@@ -34,42 +52,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 			break ;
 		if (*line)
-		{
-			add_history(line);
-			tokens = tokenize_line(line);
-			if (!tokens)
-			{
-				ft_putendl_fd("minishell: syntax error", 2);
-				set_env_value(&env, "?", "2");
-				free(line);
-				continue;
-			}
-			cmds = parse_tokens(tokens, env);
-			if (cmds)
-			{
-				curr = cmds;
-				i = 0;
-				while (curr)
-				{
-					printf("Command #%d:\n", i++);
-					print_cmd(curr);
-					curr = curr->next;
-				}
-				exit_status = execute_command_sequence(cmds, &env);;
-				exit_str = ft_itoa(exit_status);
-				if (exit_str)
-				{
-					set_env_value(&env, "?", exit_str);
-					free(exit_str);
-				}
-				free_cmd_list(cmds);
-			}
-			else
-			{
-				ft_putstr_fd("Parser returned NULL (syntax error?)\n", 2);
-			}
-			free_tab(tokens);
-		}
+			process_command_line(line, &env);
 		free(line);
 	}
 	free(line);

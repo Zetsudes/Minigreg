@@ -103,35 +103,84 @@ void	run_child_process(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 	exec_command(cmd, env);
 }
 
+static void	update_dollar_question(t_cmd *cmd_list, char *exit_code)
+{
+	t_cmd	*current;
+	int		i;
+
+	current = cmd_list;
+	while (current)
+	{
+		i = 0;
+		while (current->args && current->args[i])
+		{
+			if (ft_strcmp(current->args[i], "$?") == 0)
+			{
+				free(current->args[i]);
+				current->args[i] = ft_strdup(exit_code);
+			}
+			i++;
+		}
+		current = current->next;
+	}
+}
+
+static void	expand_command_args(t_cmd *cmd, t_env *env)
+{
+	int		i;
+	char	*expanded;
+
+	i = 0;
+	while (cmd->args && cmd->args[i])
+	{
+		// Only expand if it contains $ and is not already processed $?
+		if (ft_strchr(cmd->args[i], '$') && ft_strcmp(cmd->args[i], "$?") != 0)
+		{
+			expanded = expand_var(cmd->args[i], env);
+			free(cmd->args[i]);
+			cmd->args[i] = expanded;
+		}
+		i++;
+	}
+}
+
 int	execute_command_sequence(t_cmd *cmd_list, t_env **env)
 {
-	t_cmd	*start;
-	t_cmd	*end;
 	t_cmd	*next;
-	int		result = 0;
+	t_cmd	*after;
+	t_cmd	*current;
+	int		status;
+	char	*exit_code;
 
+	status = 0;
 	while (cmd_list)
 	{
-		start = cmd_list;
-		end = start;
-
-		// Advance until we hit a semicolon or end of list
-		while (end->next && end->cmd_separator == 0)
-			end = end->next;
-
-		// Save the rest of the list
-		next = end->next;
-
-		// Temporarily disconnect the sublist
-		end->next = NULL;
-
-		// Execute this group (pipe or single)
-		result = execute_commands(start, env);
-
-		// Restore connection for the next loop
-		end->next = next;
-		cmd_list = next;
+		next = cmd_list;
+		while (next->next && next->cmd_separator == 0)
+			next = next->next;
+		after = next->next;
+		next->next = NULL;
+		
+		// ADDED: Re-expand variables for all commands in this sequence
+		current = cmd_list;
+		while (current)
+		{
+			expand_command_args(current, *env);
+			current = current->next;
+		}
+		
+		// Keep the original $? handling
+		exit_code = get_env_value(*env, "?");
+		if (!exit_code)
+			exit_code = "0";
+		update_dollar_question(cmd_list, exit_code);
+		
+		status = execute_commands(cmd_list, env);
+		set_env_value(env, "?", ft_itoa(status));
+		next->next = after;
+		cmd_list = after;
 	}
-	return (result);
+	return (status);
 }
+
 
