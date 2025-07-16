@@ -23,6 +23,8 @@
 # include "exec.h"
 # include "pipe.h"
 # include "signals.h"
+# include "lexer.h"
+# include "parsing.h"
 
 void	init_signals(void);
 

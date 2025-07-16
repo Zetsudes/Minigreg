@@ -18,11 +18,22 @@ SRC = env/env_list.c \
 	  builtins/cd.c \
 	  builtins/export.c \
 	  builtins/handle_builtin.c \
-	  parsing/parsing_utils.c \
-	  parsing/parsing.c \
-	  parsing/tokenizer.c \
-	  parsing/tokenizer_utils.c \
-	  parsing/expand_var.c \
+	  parsing/parse_args.c \
+	  parsing/parse_core.c \
+	  parsing/parse_error.c \
+	  parsing/parse_redir.c \
+	  parsing/parse_segment.c \
+	  parsing/parse_utils.c \
+	  lexer/lex_utils.c \
+	  lexer/lex_builder.c \
+	  lexer/lex_add.c \
+	  lexer/lex_handlers1.c \
+	  lexer/lex_handlers2.c \
+	  lexer/lex_core.c \
+	  expand_var/exp_dollar.c \
+	  expand_var/exp_quotes.c \
+	  expand_var/exp_utils.c \
+	  expand_var/expand_var.c \
 	  pipe/clean.c \
 	  pipe/pipe_utils.c \
 	  pipe/pipe.c \
