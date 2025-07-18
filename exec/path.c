@@ -40,11 +40,11 @@ char	*get_path(char *cmd, char **env)
 	char *final_path;
 
 	i = 0;
-	if (cmd[0] == '/' || (cmd[0] == '.' && cmd[1] == '/')) // Handles absolute and relative paths <3
+	if (ft_strchr(cmd, '/'))
 	{
-		if (access(cmd, F_OK | X_OK) == 0)
-			return (ft_strdup(cmd)); // Path already complete <3
-		return (NULL);
+			if (access(cmd, F_OK) == 0)
+					return (ft_strdup(cmd));
+			return (NULL);
 	}
 	while (env[i] && ft_strncmp(env[i], "PATH=", 5)) // Finds PATH env var
 		i++;

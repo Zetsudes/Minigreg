@@ -68,6 +68,8 @@ void	execute_pipeline_command(t_pipeline *pipeline, int cmd_index, int fd_in,
 	char	**envp;
 
 	cmd = pipeline->cmds[cmd_index];
+	if (cmd->redir_error)
+                exit(1);
 	// Set up input
 	if (cmd->heredoc) // Using your teammate's heredoc flag
 		fd_in = handle_heredoc(cmd);
@@ -81,26 +83,22 @@ void	execute_pipeline_command(t_pipeline *pipeline, int cmd_index, int fd_in,
 		}
 	}
 	// Set up output
-	if (cmd_index == pipeline->cmd_count - 1) // Last command
-	{
-		if (cmd->outfile)
-		{
-			if (cmd->append)
-				fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND,
-						0644);
-			else
-				fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (fd_out < 0)
+	if (cmd->outfile)
 			{
-				perror(cmd->outfile);
-				exit(1);
+					if (cmd->append)
+							fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+					else
+							fd_out = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+					if (fd_out < 0)
+					{
+							perror(cmd->outfile);
+							exit(1);
+					}
 			}
-		}
-		else
-			fd_out = STDOUT_FILENO;
-	}
-	else // Not last command
-		fd_out = pipeline->pipes[cmd_index][1];
+			else if (cmd_index < pipeline->cmd_count - 1)
+					fd_out = pipeline->pipes[cmd_index][1];
+			else
+					fd_out = STDOUT_FILENO;
 	// Redirect file descriptors
 	if (fd_in != STDIN_FILENO)
 	{

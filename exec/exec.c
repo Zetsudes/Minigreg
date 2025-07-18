@@ -13,14 +13,24 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 	int		fd_in;
 	int		fd_out;
 
+	if (cmd->redir_error)
+                return (1);
 	fd_in = STDIN_FILENO;
 	fd_out = STDOUT_FILENO;
 	if (handle_input_redirection(cmd, &fd_in))
-		return (1);
+			return (1);
 	if (handle_output_redirection(cmd, fd_in, &fd_out))
-		return (1);
+			return (1);
+	if (!cmd->args || !cmd->args[0])
+	{
+			if (fd_in != STDIN_FILENO)
+					close(fd_in);
+			if (fd_out != STDOUT_FILENO)
+					close(fd_out);
+			return (0);
+	}
 	if (is_builtin(cmd))
-		return (execute_builtin(cmd, env, fd_in, fd_out));
+			return (execute_builtin(cmd, env, fd_in, fd_out));
 	pid = fork();
 	if (pid < 0)
 	{

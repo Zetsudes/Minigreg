@@ -1,5 +1,5 @@
-
 #include "../include/minishell.h"
+#include <errno.h>
 
 void	free_tab(char **tab)
 {
@@ -60,6 +60,21 @@ void	exec_command(t_cmd *cmd, t_env **env)
 		exit(127);
 	}
 	execve(path, cmd->args, envp);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd->args[0], 2);
+	ft_putstr_fd(": ", 2);
+	if (errno == EACCES || errno == EISDIR)
+	{
+			ft_putstr_fd("Permission denied\n", 2);
+			free_tab(envp);
+			exit(126);
+	}
+	else if (errno == ENOENT)
+	{
+			ft_putstr_fd("No such file or directory\n", 2);
+			free_tab(envp);
+			exit(127);
+	}
 	perror("execve");
 	free_tab(envp);
 	exit(1);

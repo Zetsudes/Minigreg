@@ -21,7 +21,7 @@
 int	handle_builtin(t_cmd *cmd, t_env **env)
 {
 	if (!cmd || !cmd->args || !cmd->args[0])
-        return (1);
+        return (0);
     if (ft_strcmp(cmd->args[0], "pwd") == 0)
         return (pwd());
     else if (ft_strcmp(cmd->args[0], "cd") == 0)
