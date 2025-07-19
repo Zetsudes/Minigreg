@@ -29,7 +29,7 @@ int	cd(char **args, t_env **env)
 		return (perror("getcwd"), 1);
 	if (args[1] && args[2])
 	{
-		printf("cd: too many arguments\n");
+		write(2, "cd: too many arguments\n", 23);
 		free(old_pwd);
 		return (1);
 	}
@@ -41,7 +41,7 @@ int	cd(char **args, t_env **env)
 		{
 			write(2, "cd: HOME not set\n", 17);
 			free(old_pwd);
-			return 0;
+			return 1;
 		}
 		 if (*target == '\0')
 		{

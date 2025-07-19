@@ -12,7 +12,7 @@ int	handle_dollar(const char *in, int *i, char **out, t_env *env)
 		if (!val)
 			val = "0";
 		(*i)++;
-		return (append_str(out, val));
+		return (append_str(out, "?"));
 	}
 	if (!ft_isalpha(in[*i]) && in[*i] != '_')
 		return (append_char(out, '$'));

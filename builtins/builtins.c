@@ -68,8 +68,10 @@ int	exit_builtin(char **args)
 		exit(0);
 	if (!is_numeric(args[1]))
 	{
-		printf("exit: %s: numeric argument required\n", args[1]);
-		exit(255);
+		ft_putstr_fd("exit: ", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putendl_fd(": numeric argument required", 2);
+		exit(2);
 	}
 	exit_code = atoi(args[1]);
 	if (args[2]) // Too many arguments : prints error but doesn't exit <3
