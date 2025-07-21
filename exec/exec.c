@@ -113,67 +113,11 @@ void	run_child_process(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 	exec_command(cmd, env);
 }
 
-static void	update_dollar_question(t_cmd *cmd_list, char *exit_code)
-{
-	t_cmd	*current;
-	int		i;
-	char	*new_arg;
-	
-	current = cmd_list;
-	while (current)
-	{
-		i = 0;
-		while (current->args && current->args[i])
-		{
-			// Check if arg is exactly "?"
-			if (ft_strcmp(current->args[i], "?") == 0)
-			{
-				free(current->args[i]);
-				current->args[i] = ft_strdup(exit_code);
-			}
-			// Check if arg starts with "?" (like "?HELLO")
-			else if (current->args[i][0] == '?')
-			{
-				// Replace ? with exit_code at the beginning
-				new_arg = malloc(strlen(exit_code) + strlen(current->args[i]));
-				if (new_arg)
-				{
-					strcpy(new_arg, exit_code);
-					strcat(new_arg, current->args[i] + 1); // Skip the '?'
-					free(current->args[i]);
-					current->args[i] = new_arg;
-				}
-			}
-			i++;
-		}
-		current = current->next;
-	}
-}
-
-static void	expand_command_args(t_cmd *cmd, t_env *env)
-{
-	int		i;
-	char	*expanded;
-	
-	i = 0;
-	while (cmd->args && cmd->args[i])
-	{
-		// Only expand if it contains $ but skip pure $? (already handled)
-		if (ft_strchr(cmd->args[i], '$') && ft_strcmp(cmd->args[i], "$?") != 0)
-		{
-			expanded = expand_var(cmd->args[i], env);
-			free(cmd->args[i]);
-			cmd->args[i] = expanded;
-		}
-		i++;
-	}
-}
 
 int	execute_command_sequence(t_cmd *cmd_list, t_env **env)
 {
 	t_cmd	*next;
 	t_cmd	*after;
-	t_cmd	*current;
 	int		status;
 	char	*exit_code;
 	char	*status_str;
@@ -187,20 +131,10 @@ int	execute_command_sequence(t_cmd *cmd_list, t_env **env)
 		after = next->next;
 		next->next = NULL;
 		
-		// Get the CURRENT exit code BEFORE doing anything
-		exit_code = get_env_value(*env, "?");
-		if (!exit_code)
-			exit_code = "0";
-		// First update $? with current exit code
-		update_dollar_question(cmd_list, exit_code);
-		
-		// Then expand other variables
-		current = cmd_list;
-		while (current)
-		{
-			expand_command_args(current, *env);
-			current = current->next;
-		}
+                // Get the CURRENT exit code BEFORE doing anything
+                exit_code = get_env_value(*env, "?");
+                if (!exit_code)
+                        exit_code = "0";
 		
 		// Execute the commands
 		status = execute_commands(cmd_list, env);

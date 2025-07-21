@@ -1,10 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:07:29 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:07:29 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the echo builtin command   <3
-<3 echo -n = NO newline, echo = newline         <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the echo builtin command.
+** echo -n = no newline; echo = newline.
 */
 int	echo(char **args)
 {
@@ -12,10 +22,10 @@ int	echo(char **args)
 	int	newline;
 
 	i = 1;
-	newline = 1; // Assuming there's no -n flag <3
+	newline = 1;
 	while (args[i] && is_valid_n_flag(args[i]))
 	{
-		newline = 0; // If we find one then bye bye newline </3
+		newline = 0;
 		i++;
 	}
 	while (args[i])
@@ -25,18 +35,14 @@ int	echo(char **args)
 			write(STDOUT_FILENO, " ", 1);
 		i++;
 	}
-	// printf("miaou");
-		// Test to confirm this function is being executed and not execve <3
 	if (newline)
 		write(STDOUT_FILENO, "\n", 1);
 	return (0);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the env builtin command                  <3
-<3 Prints all env var that have a VALUE like this : KEY=VALUE <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the env builtin command.
+** Prints all env vars that have a value as KEY=VALUE.
 */
 int	env_builtin(t_env *env)
 {
@@ -45,7 +51,7 @@ int	env_builtin(t_env *env)
 	tmp = env;
 	while (tmp)
 	{
-		if (tmp->value)
+		if (tmp->value && ft_strcmp(tmp->key, "?") != 0)
 			printf("%s=%s\n", tmp->key, tmp->value);
 		tmp = tmp->next;
 	}
@@ -53,10 +59,8 @@ int	env_builtin(t_env *env)
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the exit builtin command       <3
-<3 Does not exit if there's more than two arguments <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the exit builtin command.
+** Does not exit if there are more than two arguments.
 */
 int	exit_builtin(char **args)
 {
@@ -74,21 +78,19 @@ int	exit_builtin(char **args)
 		exit(2);
 	}
 	exit_code = atoi(args[1]);
-	if (args[2]) // Too many arguments : prints error but doesn't exit <3
+	if (args[2])
 	{
 		write(2, "exit: too many arguments\n", 25);
 		return (1);
 	}
 	if (exit_code > 255)
-		exit_code = exit_code % 256; // If number is bigger than 255, bash only keeps the lower 8 bits <3
-	exit(exit_code); // Exits with the specified code <3
+		exit_code = exit_code % 256;
+	exit(exit_code);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the pwd builtin command      <3
-<3 Gets and prints the current working directory  <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the pwd builtin command.
+** Gets and prints the current working directory.
 */
 int	pwd(void)
 {
@@ -99,16 +101,13 @@ int	pwd(void)
 		ft_printf("%s\n", cwd);
 		return (0);
 	}
-	else
-		perror("getcwd()");
+	perror("getcwd()");
 	return (1);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the unset builtin command  <3
-<3 Removes environment variable(s) from env     <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the unset builtin command.
+** Removes environment variable(s) from env.
 */
 int	unset(char **args, t_env **env)
 {
@@ -122,5 +121,5 @@ int	unset(char **args, t_env **env)
 		unset_single_var(env, args[i]);
 		i++;
 	}
-	return (0); // Always succeeds, never returns error <3
+	return (0);
 }

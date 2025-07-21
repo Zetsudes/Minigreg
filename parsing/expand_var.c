@@ -3,6 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   expand_var.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:15:38 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:15:38 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_var.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
 /*   By: lkantzer <lkantzer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 11:10:00 by lkantzer          #+#    #+#             */
@@ -12,9 +24,7 @@
 
 #include "../include/minishell.h"
 
-/* -------------------------------------------------------------------------- */
-/*  Helpers : append_char / append_str                                         */
-/* -------------------------------------------------------------------------- */
+/* Append a single char to a string (with malloc) */
 static int	append_char(char **dst, char c)
 {
 	char	*new;
@@ -25,14 +35,7 @@ static int	append_char(char **dst, char c)
 		len = ft_strlen(*dst);
 	new = malloc(len + 2);
 	if (!new)
-	{
-		if (*dst)
-		{
-			free(*dst);
-			*dst = NULL;
-		}
-		return (-1);
-	}
+		return (free(*dst), *dst = NULL, -1);
 	if (*dst)
 	{
 		ft_memcpy(new, *dst, len);
@@ -54,6 +57,7 @@ static int	free_and_fail(char **p)
 	return (-1);
 }
 
+/* Append a string to another string (with malloc) */
 static int	append_str(char **dst, const char *add)
 {
 	size_t	len;
@@ -77,9 +81,7 @@ static int	append_str(char **dst, const char *add)
 	return (1);
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Gestion du $VARIABLE / $?                                                  */
-/* -------------------------------------------------------------------------- */
+/* Expand $VARIABLE or $? from input string */
 static int	handle_dollar(const char *in, int *i, char **out, t_env *env)
 {
 	char	*var;
@@ -88,11 +90,11 @@ static int	handle_dollar(const char *in, int *i, char **out, t_env *env)
 
 	if (in[*i] == '?')
 	{
-		// val = get_env_value(env, "?");
-		// if (!val)
-		// 	val = "0";
-		(*i)++;                       /* saute le caractère '?' */
-		return (append_str(out, "$?"));
+		val = get_env_value(env, "?");
+		if (!val)
+			val = "0";
+		(*i)++;
+		return (append_str(out, val));
 	}
 	if (!ft_isalpha(in[*i]) && in[*i] != '_')
 		return (append_char(out, '$'));
@@ -109,9 +111,7 @@ static int	handle_dollar(const char *in, int *i, char **out, t_env *env)
 	return (append_str(out, val));
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Contexte d’expansion                                                      */
-/* -------------------------------------------------------------------------- */
+/* Expansion context */
 typedef struct s_ctx
 {
 	char	**out;
@@ -120,41 +120,44 @@ typedef struct s_ctx
 	t_env	*env;
 }	t_ctx;
 
-/* -------------------------------------------------------------------------- */
-/*  Handlers élémentaires                                                     */
-/* -------------------------------------------------------------------------- */
-static int  dq_backslash(const char *in, int *i, t_ctx *c)
+/* Handle escaped characters inside double quotes */
+static int	dq_backslash(const char *in, int *i, t_ctx *c)
 {
-    char next = in[*i + 1];
+	char	next;
 
-    if (next == '$' || next == '`' || next == '"' ||
-        next == '\\' || next == '\n')
-    {
-        if (append_char(c->out, next) == -1)
-            return (-1);
-        *i += 2;
-        return (1);
-    }
-    return (0);
+	next = in[*i + 1];
+	if (next == '$' || next == '`' || next == '"' ||
+		next == '\\' || next == '\n')
+	{
+		if (append_char(c->out, next) == -1)
+			return (-1);
+		*i += 2;
+		return (1);
+	}
+	return (0);
 }
 
-static int  case_backslash(const char *in, int *i, t_ctx *c)
+/* Handle general backslash escaping */
+static int	case_backslash(const char *in, int *i, t_ctx *c)
 {
-    if (c->sq || in[*i] != '\\' || !in[*i + 1])
-        return (0);
-    if (c->dq)
-    {
-        int r = dq_backslash(in, i, c);
-        if (r)
-            return (r);
-        return (0);
-    }
-    if (append_char(c->out, in[*i + 1]) == -1)
-        return (-1);
-    *i += 2;
-    return (1);
+	int	r;
+
+	if (c->sq || in[*i] != '\\' || !in[*i + 1])
+		return (0);
+	if (c->dq)
+	{
+		r = dq_backslash(in, i, c);
+		if (r)
+			return (r);
+		return (0);
+	}
+	if (append_char(c->out, in[*i + 1]) == -1)
+		return (-1);
+	*i += 2;
+	return (1);
 }
 
+/* Toggle single quote state */
 static int	case_single_quote(const char *in, int *i, t_ctx *c)
 {
 	if (in[*i] != '\'' || c->dq)
@@ -164,11 +167,11 @@ static int	case_single_quote(const char *in, int *i, t_ctx *c)
 	return (1);
 }
 
+/* Toggle double quote state */
 static int	case_double_quote(const char *in, int *i, t_ctx *c)
 {
 	if (c->sq || in[*i] != '"')
 		return (0);
-	/* Ignore un guillemet précédé d'un backslash hors double-quotes */
 	if (*i > 0 && in[*i - 1] == '\\' && c->dq == 0)
 		return (0);
 	c->dq = !c->dq;
@@ -176,6 +179,7 @@ static int	case_double_quote(const char *in, int *i, t_ctx *c)
 	return (1);
 }
 
+/* Handle variable expansion */
 static int	case_dollar(const char *in, int *i, t_ctx *c)
 {
 	int	ret;
@@ -189,9 +193,7 @@ static int	case_dollar(const char *in, int *i, t_ctx *c)
 	return (1);
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Essaye chaque handler                                                     */
-/* -------------------------------------------------------------------------- */
+/* Try all expansion-related cases */
 static int	expv_try_cases(const char *in, int *i, t_ctx *c)
 {
 	int	r;
@@ -211,6 +213,7 @@ static int	expv_try_cases(const char *in, int *i, t_ctx *c)
 	return (0);
 }
 
+/* Process each character of the input string */
 static int	expv_process_char(const char *in, int *i, t_ctx *c)
 {
 	int	ret;
@@ -228,9 +231,7 @@ static int	expv_process_char(const char *in, int *i, t_ctx *c)
 	return (1);
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Boucle principale                                                         */
-/* -------------------------------------------------------------------------- */
+/* Main loop to expand input */
 static int	expand_core(const char *in, char **out, t_env *env)
 {
 	t_ctx	c;
@@ -242,14 +243,14 @@ static int	expand_core(const char *in, char **out, t_env *env)
 	c.env = env;
 	i = 0;
 	while (in[i])
+	{
 		if (!expv_process_char(in, &i, &c))
 			return (0);
+	}
 	return (1);
 }
 
-/* -------------------------------------------------------------------------- */
-/*  API publique                                                              */
-/* -------------------------------------------------------------------------- */
+/* Public API: expand a string using the environment */
 char	*expand_var(const char *input, t_env *env)
 {
 	char	*res;

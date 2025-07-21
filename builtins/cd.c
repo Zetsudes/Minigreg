@@ -13,10 +13,8 @@
 #include "../include/minishell.h"
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the cd builtin command               <3
-<3 Changes the current directory, updates PWD and OLDPWD  <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the cd builtin command.
+** Changes the current directory and updates PWD and OLDPWD.
 */
 int	cd(char **args, t_env **env)
 {
@@ -24,7 +22,7 @@ int	cd(char **args, t_env **env)
 	char	*old_pwd;
 	char	*target;
 
-	old_pwd = getcwd(NULL, 0); // Saves current directory before changing <3
+	old_pwd = getcwd(NULL, 0);
 	if (!old_pwd)
 		return (perror("getcwd"), 1);
 	if (args[1] && args[2])
@@ -33,50 +31,48 @@ int	cd(char **args, t_env **env)
 		free(old_pwd);
 		return (1);
 	}
-	set_env_value(env, "OLDPWD", old_pwd); // Updates OLDPWD with current directory <3
+	set_env_value(env, "OLDPWD", old_pwd);
 	if (!args[1] || (args[1] && *args[1] == '\0'))
 	{
-		target = get_env_value(*env, "HOME"); // No argument -> go to HOME <3
+		target = get_env_value(*env, "HOME");
 		if (!target)
 		{
 			write(2, "cd: HOME not set\n", 17);
 			free(old_pwd);
-			return 1;
+			return (1);
 		}
-		 if (*target == '\0')
+		if (*target == '\0')
 		{
 			free(old_pwd);
-			return 0;
+			return (0);
 		}
 	}
 	else
 		target = args[1];
-	if (chdir(target) == -1) // Changes directory <3
+	if (chdir(target) == -1)
 		return (perror("cd"), free(old_pwd), 1);
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (perror("getcwd"), free(old_pwd), 1);
-	set_env_value(env, "PWD", cwd); // Updates PWD with new directory <3
+	set_env_value(env, "PWD", cwd);
 	free(old_pwd);
 	return (0);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the cd - builtin command <3
-<3 Uses OLDPWD to know where to go back to    <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the cd - builtin command.
+** Uses OLDPWD to change to the previous directory.
 */
 int	cd_dash(t_env **env)
 {
-	char	*oldpwd = get_env_value(*env, "OLDPWD");
+	char	*oldpwd;
 	char	cwd[PATH_MAX];
 
-	if (!oldpwd || chdir(oldpwd) == -1) // Changes to previous directory <3
+	oldpwd = get_env_value(*env, "OLDPWD");
+	if (!oldpwd || chdir(oldpwd) == -1)
 		return (perror("cd -"), 1);
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (perror("getcwd"), 1);
-	set_env_value(env, "PWD", cwd); // Updates PWD <3
-	ft_printf("%s\n", cwd); // Prints new directory <3
+	set_env_value(env, "PWD", cwd);
+	ft_printf("%s\n", cwd);
 	return (0);
 }
-

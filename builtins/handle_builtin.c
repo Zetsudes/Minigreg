@@ -13,42 +13,38 @@
 #include "../include/minishell.h"
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Function that handles all builtin commands       <3
-<3 Called when a command is identified as a builtin <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Function that handles all builtin commands.
+** Called when a command is identified as a builtin.
 */
 int	handle_builtin(t_cmd *cmd, t_env **env)
 {
 	if (!cmd || !cmd->args || !cmd->args[0])
-        return (0);
-    if (ft_strcmp(cmd->args[0], "pwd") == 0)
-        return (pwd());
-    else if (ft_strcmp(cmd->args[0], "cd") == 0)
-    {
-        if (!cmd->args[1] || ft_strcmp(cmd->args[1], "-") != 0)
-            return (cd(cmd->args, env));
-        else
-            return (cd_dash(env));
-    }
-    else if (ft_strcmp(cmd->args[0], "export") == 0)
-        return (export(cmd->args, env));
-    else if (ft_strcmp(cmd->args[0], "unset") == 0)
-        return (unset(cmd->args, env));
-    else if (ft_strcmp(cmd->args[0], "env") == 0)
-        return (env_builtin(*env));
-    else if (ft_strcmp(cmd->args[0], "echo") == 0)
-        return (echo(cmd->args));
-    else if (ft_strcmp(cmd->args[0], "exit") == 0)
-        return (exit_builtin(cmd->args));
-    return (1); 
+		return (0);
+	if (ft_strcmp(cmd->args[0], "pwd") == 0)
+		return (pwd());
+	else if (ft_strcmp(cmd->args[0], "cd") == 0)
+	{
+		if (!cmd->args[1] || ft_strcmp(cmd->args[1], "-") != 0)
+			return (cd(cmd->args, env));
+		else
+			return (cd_dash(env));
+	}
+	else if (ft_strcmp(cmd->args[0], "export") == 0)
+		return (export(cmd->args, env));
+	else if (ft_strcmp(cmd->args[0], "unset") == 0)
+		return (unset(cmd->args, env));
+	else if (ft_strcmp(cmd->args[0], "env") == 0)
+		return (env_builtin(*env));
+	else if (ft_strcmp(cmd->args[0], "echo") == 0)
+		return (echo(cmd->args));
+	else if (ft_strcmp(cmd->args[0], "exit") == 0)
+		return (exit_builtin(cmd->args));
+	return (1);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Checks if a command is a builtin command         <3
-<3 Called when a command is identified as a builtin <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Checks if a command is a builtin command.
+** Returns 1 if true, 0 otherwise.
 */
 int	is_builtin(t_cmd *cmd)
 {
@@ -68,5 +64,3 @@ int	is_builtin(t_cmd *cmd)
 	}
 	return (0);
 }
-
-

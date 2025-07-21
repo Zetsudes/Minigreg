@@ -61,26 +61,34 @@ char	*get_split_value(char **split, t_env *first)
 <3 Used to process env var and create a node            <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-t_env	*handle_var(char *env_str, t_env *first)
+t_env   *handle_var(char *env_str, t_env *first)
 {
-	t_env	*new_node;
-	char	*value;
-	char	**split;
+        t_env   *new_node;
+        char    *eq;
+        char    *key;
+        char    *value;
 
-	split = ft_split(env_str, '=');       
-		// Splits at '=' to get key and value <3
-	value = get_split_value(split, first); // Validates value and gets it <3
-	if (!value)
-		return (NULL);
-	new_node = create_node(split[0], value);
-		// Creates node with key and value <3
-	free_tab(split);
-	if (!new_node)
-	{
-		free_env_list(first);
-		return (NULL);
-	}
-	return (new_node);
+        eq = ft_strchr(env_str, '=');
+        if (!eq)
+                return (create_node(env_str, ""));
+        key = ft_substr(env_str, 0, eq - env_str);
+        value = ft_strdup(eq + 1);
+        if (!key || !value)
+        {
+                free(key);
+                free(value);
+                free_env_list(first);
+                return (NULL);
+        }
+        new_node = create_node(key, value);
+        free(key);
+        free(value);
+        if (!new_node)
+        {
+                free_env_list(first);
+                return (NULL);
+        }
+        return (new_node);
 }
 
 /*
