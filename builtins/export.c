@@ -3,40 +3,78 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/21 08:12:52 by marvin            #+#    #+#             */
-/*   Updated: 2025/07/21 08:12:52 by marvin           ###   ########.fr       */
+/*   Created: 2025/04/29 18:23:51 by zamohame          #+#    #+#             */
+/*   Updated: 2025/08/05 00:00:00 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-/*
-** Implementation of the export builtin command.
-** Exports variable(s), validates args, and assigns.
-** If no arguments, prints all variables in alphabetical order.
-*/
+static char	*expand_export_key(const char *key, t_env *env)
+{
+	if (key[0] != '$')
+		return (ft_strdup((char *)key));
+	key++;
+	if (!*key)
+		return (NULL);
+	return (ft_strdup(get_env_value(env, (char *)key)));
+}
+
+static int	export_with_equal(char *arg, t_env **env, t_env *current_env)
+{
+	char	*eq;
+	char	*raw_key;
+	char	*key;
+	char	*joined;
+
+	eq = ft_strchr(arg, '=');
+	raw_key = ft_substr(arg, 0, eq - arg);
+	if (!raw_key)
+		return (1);
+	key = expand_export_key(raw_key, current_env);
+	free(raw_key);
+	if (!key || !is_valid_identifier(key))
+	{
+		ft_putstr_fd("export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
+		free(key);
+		return (1);
+	}
+	joined = ft_strjoin(key, eq);
+	set_and_assign(joined, env);
+	free(joined);
+	free(key);
+	return (0);
+}
+
 int	export(char **args, t_env **env)
 {
-	int	i;
-	int	status;
-
+	int		i;
+	int		status;
+	i = 1;
 	status = 0;
+	
 	if (!args[1])
 		return (print_env_export(*env));
-	i = 1;
 	while (args[i])
 	{
+		if (ft_strchr(args[i], '='))
+		{
+			if (export_with_equal(args[i], env, *env))
+				status = 1;
+			i++;
+			continue ;
+		}
 		if (!is_valid_identifier(args[i]))
 		{
 			ft_putstr_fd("export: `", 2);
 			ft_putstr_fd(args[i], 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
+			ft_putendl_fd("': not a valid identifier", 2);
 			status = 1;
 		}
-		else if (ft_strchr(args[i], '='))
-			set_and_assign(args[i], env);
 		else
 			set_env_value(env, args[i], NULL);
 		i++;
@@ -44,10 +82,6 @@ int	export(char **args, t_env **env)
 	return (status);
 }
 
-/*
-** Updates existing variable or adds new one.
-** Helper function used in export().
-*/
 int	set_and_assign(char *arg, t_env **env)
 {
 	t_env	*new_node;
@@ -63,11 +97,6 @@ int	set_and_assign(char *arg, t_env **env)
 	return (0);
 }
 
-/*
-** Prints all env variables in alphabetical order.
-** Format: declare -x KEY="VALUE"
-** Called when export has no arguments.
-*/
 int	print_env_export(t_env *env)
 {
 	t_env	**arr;
@@ -92,38 +121,32 @@ int	print_env_export(t_env *env)
 	return (0);
 }
 
-/*
-** Checks if a variable name is valid for export.
-*/
-int	is_valid_identifier(const char *str)
+int	is_valid_identifier(const char *s)
 {
 	int	i;
 
-	if (!str || (!ft_isalpha(str[0]) && str[0] != '_'))
+	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
 		return (0);
 	i = 1;
-	while (str[i] && str[i] != '=')
+	while (s[i] && s[i] != '=')
 	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
+		if (!ft_isalnum(s[i]) && s[i] != '_')
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
-/*
-** Sorts an array of environment variables by key (bubble sort).
-*/
 void	sort_env_by_key(t_env **arr, int size)
 {
+	int		swapped;
 	int		i;
-	int		sorted;
 	t_env	*tmp;
 
-	sorted = 0;
-	while (!sorted)
+	swapped = 1;
+	while (swapped)
 	{
-		sorted = 1;
+		swapped = 0;
 		i = 0;
 		while (i < size - 1)
 		{
@@ -132,7 +155,7 @@ void	sort_env_by_key(t_env **arr, int size)
 				tmp = arr[i];
 				arr[i] = arr[i + 1];
 				arr[i + 1] = tmp;
-				sorted = 0;
+				swapped = 1;
 			}
 			i++;
 		}

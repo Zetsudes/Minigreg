@@ -1,12 +1,20 @@
 #include "../include/minishell.h"
 
-static int	token_is_quoted(const char *tok)
+static int	token_is_quoted(const char *s)
 {
-	while (tok && *tok)
+	while (*s)
 	{
-	if (*tok == '\'' || *tok == '"')
-			return (1);
-		tok++;
+		if (*s == '\'' || *s == '"')
+		{
+			char q = *s++;
+			const char *start = s;
+			while (*s && *s != q)
+				s++;
+			if (*s == q && s - start > 0)
+				return (1);
+		}
+		else
+			s++;
 	}
 	return (0);
 }

@@ -23,11 +23,10 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 			return (1);
 	if (!cmd->args || !cmd->args[0])
 	{
-			if (fd_in != STDIN_FILENO)
-					close(fd_in);
-			if (fd_out != STDOUT_FILENO)
-					close(fd_out);
-			return (0);
+		ft_putendl_fd("minishell: command not found", 2);
+		if (fd_in  != STDIN_FILENO)  close(fd_in);
+		if (fd_out != STDOUT_FILENO) close(fd_out);
+		return (127);
 	}
 	if (is_builtin(cmd))
 			return (execute_builtin(cmd, env, fd_in, fd_out));
