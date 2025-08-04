@@ -6,73 +6,129 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:23:51 by zamohame          #+#    #+#             */
-/*   Updated: 2025/04/29 18:27:27 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/05 00:00:00 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+#include <limits.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-/*
-** Implementation of the cd builtin command.
-** Changes the current directory and updates PWD and OLDPWD.
-*/
-int	cd(char **args, t_env **env)
+static void	print_getcwd_warning(void)
+{
+	ft_putendl_fd(
+		"cd: error retrieving current directory: getcwd: "
+		"cannot access parent directories: No such file or directory",
+		STDERR_FILENO);
+}
+
+static char	*pop_last(const char *oldpwd)
+{
+	char	*dup;
+	char	*slash;
+
+	dup = ft_strdup((char *)oldpwd);
+	if (!dup)
+		return (NULL);
+	slash = ft_strrchr(dup, '/');
+	if (slash && slash != dup)
+		*slash = '\0';
+	else
+	{
+		free(dup);
+		return (ft_strdup("/"));
+	}
+	return (dup);
+}
+
+static int	update_pwd(t_env **env, char *oldpwd, const char *arg)
 {
 	char	cwd[PATH_MAX];
-	char	*old_pwd;
-	char	*target;
+	char	*newpwd;
 
-	old_pwd = getcwd(NULL, 0);
-	if (!old_pwd)
-		return (perror("getcwd"), 1);
-	if (args[1] && args[2])
+	if (getcwd(cwd, sizeof(cwd)))
+		newpwd = ft_strdup(cwd);
+	else
 	{
-		write(2, "cd: too many arguments\n", 23);
-		free(old_pwd);
+		print_getcwd_warning();
+		if (ft_strcmp(arg, "..") == 0)
+			newpwd = pop_last(oldpwd);
+		else
+			newpwd = ft_strdup((char *)oldpwd);
+	}
+	if (!newpwd)
+	{
+		free(oldpwd);
 		return (1);
 	}
-	set_env_value(env, "OLDPWD", old_pwd);
-	if (!args[1] || (args[1] && *args[1] == '\0'))
+	if (oldpwd)
+		set_env_value(env, "OLDPWD", oldpwd);
+	else
+		set_env_value(env, "OLDPWD", "");
+	set_env_value(env, "PWD", newpwd);
+	free(newpwd);
+	free(oldpwd);
+	return (0);
+}
+
+
+int	cd(char **av, t_env **env)
+{
+	char	*target;
+	char	*oldpwd;
+	char	*pwd_env;
+
+	if (av[1] && av[2])
+	{
+		ft_putendl_fd("cd: too many arguments", STDERR_FILENO);
+		return (1);
+	}
+	target = av[1];
+	if (!target || !*target)
 	{
 		target = get_env_value(*env, "HOME");
 		if (!target)
 		{
-			write(2, "cd: HOME not set\n", 17);
-			free(old_pwd);
+			ft_putendl_fd("cd: HOME not set", STDERR_FILENO);
 			return (1);
 		}
-		if (*target == '\0')
-		{
-			free(old_pwd);
+		if (!*target)
 			return (0);
-		}
 	}
+	pwd_env = get_env_value(*env, "PWD");
+	if (pwd_env)
+		oldpwd = ft_strdup((char *)pwd_env);
 	else
-		target = args[1];
+		oldpwd = NULL;
 	if (chdir(target) == -1)
-		return (perror("cd"), free(old_pwd), 1);
-	if (!getcwd(cwd, sizeof(cwd)))
-		return (perror("getcwd"), free(old_pwd), 1);
-	set_env_value(env, "PWD", cwd);
-	free(old_pwd);
-	return (0);
+	{
+		perror("cd");
+		free(oldpwd);
+		return (1);
+	}
+	return (update_pwd(env, oldpwd, target));
 }
 
-/*
-** Implementation of the cd - builtin command.
-** Uses OLDPWD to change to the previous directory.
-*/
 int	cd_dash(t_env **env)
 {
 	char	*oldpwd;
-	char	cwd[PATH_MAX];
+	char	*dup;
 
 	oldpwd = get_env_value(*env, "OLDPWD");
-	if (!oldpwd || chdir(oldpwd) == -1)
-		return (perror("cd -"), 1);
-	if (!getcwd(cwd, sizeof(cwd)))
-		return (perror("getcwd"), 1);
-	set_env_value(env, "PWD", cwd);
-	ft_printf("%s\n", cwd);
-	return (0);
+	if (!oldpwd)
+	{
+		ft_putendl_fd("cd: OLDPWD not set", STDERR_FILENO);
+		return (1);
+	}
+	if (chdir(oldpwd) == -1)
+	{
+		perror("cd");
+		return (1);
+	}
+	ft_putendl_fd(oldpwd, STDOUT_FILENO);
+	dup = ft_strdup((char *)oldpwd);
+	if (!dup)
+		return (1);
+	return (update_pwd(env, dup, oldpwd));
 }

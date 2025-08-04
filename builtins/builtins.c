@@ -92,17 +92,26 @@ int	exit_builtin(char **args)
 ** Implementation of the pwd builtin command.
 ** Gets and prints the current working directory.
 */
-int	pwd(void)
+int	pwd(char **av, t_env **env)
 {
-	char	cwd[PATH_MAX];
+	char	buf[PATH_MAX];
+	char	*pwd;
 
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	(void)av;
+	if (getcwd(buf, sizeof(buf)))
+		ft_putendl_fd(buf, STDOUT_FILENO);
+	else
 	{
-		ft_printf("%s\n", cwd);
-		return (0);
+		pwd = get_env_value(*env, "PWD");
+		if (pwd)
+			ft_putendl_fd(pwd, STDOUT_FILENO);
+		else
+		{
+			perror("pwd");
+			return (1);
+		}
 	}
-	perror("getcwd()");
-	return (1);
+	return (0);
 }
 
 /*

@@ -42,6 +42,31 @@ t_cmd	**cmd_list_to_array(t_cmd *cmd_list, int *count)
 	return (cmd_array);
 }
 
+static void	handle_execve_error(t_cmd *cmd, char **envp)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd->args[0], 2);
+	ft_putstr_fd(": ", 2);
+	if (errno == ENOEXEC)
+	{
+		ft_putendl_fd("Permission denied", 2);
+		free_tab(envp);
+		exit(126);
+	}
+	else if (errno == ENOENT)
+	{
+		ft_putendl_fd(strerror(errno), 2);
+		free_tab(envp);
+		exit(127);
+	}
+	else
+	{
+		ft_putendl_fd(strerror(errno), 2);
+		free_tab(envp);
+		exit(1);
+	}
+}
+
 void	exec_command(t_cmd *cmd, t_env **env)
 {
 	char	**envp;
@@ -55,30 +80,21 @@ void	exec_command(t_cmd *cmd, t_env **env)
 	{
 		ft_putstr_fd("Command '", 2);
 		ft_putstr_fd(cmd->args[0], 2);
-		ft_putstr_fd("' not found\n", 2);
+		ft_putendl_fd("' not found", 2);
 		free_tab(envp);
 		exit(127);
 	}
+	if (access(path, F_OK) == 0 && access(path, X_OK) != 0)
+	{
+		ft_putstr_fd(path, 2);
+		ft_putendl_fd(": Permission denied", 2);
+		free_tab(envp);
+		exit(126);
+	}
 	execve(path, cmd->args, envp);
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(cmd->args[0], 2);
-	ft_putstr_fd(": ", 2);
-	if (errno == EACCES || errno == EISDIR)
-	{
-			ft_putstr_fd("Permission denied\n", 2);
-			free_tab(envp);
-			exit(126);
-	}
-	else if (errno == ENOENT)
-	{
-			ft_putstr_fd("No such file or directory\n", 2);
-			free_tab(envp);
-			exit(127);
-	}
-	perror("execve");
-	free_tab(envp);
-	exit(1);
+	handle_execve_error(cmd, envp);
 }
+
 
 int	wait_for_children(t_pipeline *pipeline, pid_t *pids)
 {
