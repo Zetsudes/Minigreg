@@ -43,3 +43,9 @@ int	tokens_grow(t_lexer *lx)
 	lx->tok = new;
 	return (1);
 }
+
+int is_empty_quotes(const char *tok)
+{
+    return ((tok[0] == '"' && tok[1] == '"' && tok[2] == '\0') ||
+            (tok[0] == '\'' && tok[1] == '\'' && tok[2] == '\0'));
+}

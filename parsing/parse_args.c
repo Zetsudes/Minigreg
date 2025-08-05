@@ -42,8 +42,10 @@ static int      count_effective_args(char **tk, int j, t_env *env)
 			continue;
 		}
 		char *tmp = process_token(tk[j], env);
-		if (tmp && (tmp[0] != '\0' || token_is_quoted(tk[j])))
-			count++;
+		if (tmp && (tmp[0] != '\0'
+				|| token_is_quoted(tk[j])
+				|| is_empty_quotes(tk[j])))
+				count++;
 		free(tmp);
 		j++;
 	}
@@ -97,8 +99,10 @@ char    **copy_args(char **tokens, int *i, t_cmd *cmd, t_env *env)
 			continue;
 		}
 		char *tmp = process_token(tokens[j], env);
-		if (tmp && (tmp[0] != '\0' || token_is_quoted(tokens[j])))
-			args[k++] = tmp;
+		if (tmp && (tmp[0] != '\0'
+				|| token_is_quoted(tokens[j])
+				|| is_empty_quotes(tokens[j])))
+				args[k++] = tmp;
 		else
 			free(tmp);
 		j++;

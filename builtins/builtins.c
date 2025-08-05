@@ -114,6 +114,13 @@ int	pwd(char **av, t_env **env)
 	return (0);
 }
 
+static void	print_unset_error(const char *arg)
+{
+	ft_putstr_fd("unset: `", 2);
+	ft_putstr_fd((char *)arg, 2);
+	ft_putendl_fd("': not a valid identifier", 2);
+}
+
 /*
 ** Implementation of the unset builtin command.
 ** Removes environment variable(s) from env.
@@ -121,14 +128,22 @@ int	pwd(char **av, t_env **env)
 int	unset(char **args, t_env **env)
 {
 	int	i;
+	int	status;
 
 	if (!args[1])
 		return (0);
 	i = 1;
+	status = 0;
 	while (args[i])
 	{
-		unset_single_var(env, args[i]);
+		if (!is_valid_identifier(args[i]) || args[i][0] == '\0')
+		{
+			print_unset_error(args[i]);
+			status = 1;
+		}
+		else
+			unset_single_var(env, args[i]);
 		i++;
 	}
-	return (0);
+	return (status);
 }
