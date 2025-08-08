@@ -1,37 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exp_quotes.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:25:54 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:25:54 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/expend.h"
 
-int  dq_backslash(const char *in, int *i, t_ctx *c)
+int	dq_backslash(const char *in, int *i, t_ctx *c)
 {
-    char next = in[*i + 1];
+	char	next;
 
-    if (next == '$' || next == '`' || next == '"' ||
-        next == '\\' || next == '\n')
-    {
-        if (append_char(c->out, next) == -1)
-            return (-1);
-        *i += 2;
-        return (1);
-    }
-    return (0);
+	next = in[*i + 1];
+	if (next == '$' || next == '`' || next == '"'
+		|| next == '\\' || next == '\n')
+	{
+		if (append_char(c->out, next) == -1)
+			return (-1);
+		*i += 2;
+		return (1);
+	}
+	return (0);
 }
 
-int  case_backslash(const char *in, int *i, t_ctx *c)
+int	case_backslash(const char *in, int *i, t_ctx *c)
 {
-    if (c->sq || in[*i] != '\\' || !in[*i + 1])
-        return (0);
-    if (c->dq)
-    {
-        int r = dq_backslash(in, i, c);
-        if (r)
-            return (r);
-        return (0);
-    }
-    if (append_char(c->out, in[*i + 1]) == -1)
-        return (-1);
-    *i += 2;
-    return (1);
-}
+	int	r;
 
+	if (c->sq || in[*i] != '\\' || !in[*i + 1])
+		return (0);
+	if (c->dq)
+	{
+		r = dq_backslash(in, i, c);
+		if (r)
+			return (r);
+		return (0);
+	}
+	if (append_char(c->out, in[*i + 1]) == -1)
+		return (-1);
+	*i += 2;
+	return (1);
+}
 
 int	case_single_quote(const char *in, int *i, t_ctx *c)
 {

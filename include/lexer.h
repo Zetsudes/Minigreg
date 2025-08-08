@@ -26,6 +26,7 @@ typedef struct s_lexer
 	t_state		st;
 }	t_lexer;
 
+
 char	**tokenize_line(char *line);
 int		is_operator(char c);
 int		is_space(char c);
@@ -44,5 +45,6 @@ int		handle_squote(const char *ln, size_t *i, t_lexer *lx);
 int		handle_dquote(const char *ln, size_t *i, t_lexer *lx);
 int		handle_quotes(const char *ln, size_t *i, t_lexer *lx);
 int		lex_step(const char *ln, size_t *i, t_lexer *lx);
+int		is_empty_quotes(const char *tok);
 
 #endif

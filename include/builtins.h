@@ -13,13 +13,13 @@ typedef struct s_builtin
 }			t_builtin;
 
 /********** BUILTINS ***********/
-int			cd(char **args, t_env **env);
+int			cd(char **av, t_env **env);
 int			cd_dash(t_env **env);
 int			echo(char **args);
 int			exit_builtin(char **args);
 int			export(char **args, t_env **env);
 int			env_builtin(t_env *env);
-int			pwd(void);
+int			pwd(char **av, t_env **env);
 int			unset(char **args, t_env **env);
 int			is_builtin(t_cmd *cmd);
 int			handle_builtin(t_cmd *cmd, t_env **env);

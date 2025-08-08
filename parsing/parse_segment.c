@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_segment.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:18:22 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:18:22 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 t_cmd	*init_cmd(void)
@@ -17,7 +29,6 @@ t_cmd	*init_cmd(void)
 	cmd->cmd_separator = 0;
 	return (cmd);
 }
-
 
 int	process_segment(t_cmd **head, t_cmd **cur, char **tk, int *i, t_env *env)
 {

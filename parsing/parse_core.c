@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_core.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:16:25 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:16:25 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -26,13 +37,16 @@ t_cmd	*parse_tokens(char **tk, t_env *env)
 		}
 		else if (tk[i] && !ft_strcmp(tk[i], ";"))
 		{
-            cur->cmd_separator = 1;
+			cur->cmd_separator = 1;
 			i++;
-			if (!tk[i] || !ft_strcmp(tk[i], ";") || !ft_strcmp(tk[i], "|"))
-				return (print_syntax_error(tk[i]), free_cmd_list(head), NULL);
+			if (!tk[i] || !ft_strcmp(tk[i], ";")
+				|| !ft_strcmp(tk[i], "|"))
+				return (print_syntax_error(tk[i]),
+					free_cmd_list(head), NULL);
 		}
 		else if (tk[i])
-			return (print_syntax_error(tk[i]), free_cmd_list(head), NULL);
+			return (print_syntax_error(tk[i]),
+				free_cmd_list(head), NULL);
 	}
 	return (head);
 }
