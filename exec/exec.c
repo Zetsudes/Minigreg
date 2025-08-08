@@ -26,7 +26,7 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 		ft_putendl_fd("minishell: command not found", 2);
 		if (fd_in  != STDIN_FILENO)  close(fd_in);
 		if (fd_out != STDOUT_FILENO) close(fd_out);
-		return (127);
+		return (0);
 	}
 	if (is_builtin(cmd))
 			return (execute_builtin(cmd, env, fd_in, fd_out));

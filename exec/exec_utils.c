@@ -44,19 +44,17 @@ t_cmd	**cmd_list_to_array(t_cmd *cmd_list, int *count)
 
 static void	handle_execve_error(t_cmd *cmd, char **envp)
 {
-	if (errno == ENOEXEC)
+	if (errno == EACCES)
 	{
 		ft_putstr_fd(cmd->args[0], 2);
 		ft_putendl_fd(": Permission denied", 2);
 		free_tab(envp);
 		exit(126);
 	}
-	else if (errno == EACCES || errno == EISDIR)
+	else if (errno == ENOEXEC)
 	{
-		ft_putstr_fd(cmd->args[0], 2);
-		ft_putendl_fd(": command not found", 2);
 		free_tab(envp);
-		exit(127);
+		exit(0);
 	}
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(cmd->args[0], 2);
@@ -70,6 +68,7 @@ void	exec_command(t_cmd *cmd, t_env **env)
 {
 	char	**envp;
 	char	*path;
+	struct stat statbuf;
 
 	envp = env_to_array(*env);
 	if (!envp)
@@ -82,11 +81,23 @@ void	exec_command(t_cmd *cmd, t_env **env)
 		free_tab(envp);
 		exit(127);
 	}
+	
+	// ADD THIS: Check if it's a directory
+	if (stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
+	{
+		ft_putstr_fd(path, 2);
+		ft_putendl_fd(": is a directory", 2);
+		free_tab(envp);
+		free(path);  // Don't forget to free path!
+		exit(126);
+	}
+	
 	if (access(path, F_OK) == 0 && access(path, X_OK) != 0)
 	{
 		ft_putstr_fd(path, 2);
 		ft_putendl_fd(": Permission denied", 2);
 		free_tab(envp);
+		free(path);  // Don't forget to free path!
 		exit(126);
 	}
 	execve(path, cmd->args, envp);
