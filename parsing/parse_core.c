@@ -1,53 +1,83 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_core.c                                       :+:      :+:    :+:   */
+/*   parse_core.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/21 08:16:25 by marvin            #+#    #+#             */
-/*   Updated: 2025/07/21 08:16:25 by marvin           ###   ########.fr       */
+/*   Created: 2025/08/12 14:30:00 by 42                #+#    #+#             */
+/*   Updated: 2025/08/12 14:30:00 by 42               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+static int	handle_after_segment(char **tk, int *i, t_cmd *cur)
+{
+	if (tk[*i] && !ft_strcmp(tk[*i], "|"))
+	{
+		*i += 1;
+		if (handle_pipe_errors(tk, *i, cur))
+			return (1);
+		return (0);
+	}
+	if (tk[*i] && !ft_strcmp(tk[*i], ";"))
+	{
+		cur->cmd_separator = 1;
+		*i += 1;
+		if (!tk[*i] || !ft_strcmp(tk[*i], ";") || !ft_strcmp(tk[*i], "|"))
+		{
+			print_syntax_error(tk[*i]);
+			return (1);
+		}
+		return (0);
+	}
+	if (tk[*i])
+	{
+		print_syntax_error(tk[*i]);
+		return (1);
+	}
+	return (0);
+}
+
+static int	parse_tokens_loop(char **tk, t_env *env, t_cmd **head, t_cmd **cur)
+{
+	t_cmd	*newc;
+	int		i;
+
+	i = 0;
+	while (tk[i])
+	{
+		newc = process_segment(tk, &i, env);
+		if (!newc)
+			return (free_cmd_list(*head), 1);
+		if (!*head)
+			*head = newc;
+		else
+			(*cur)->next = newc;
+		*cur = newc;
+		if (handle_after_segment(tk, &i, *cur))
+			return (free_cmd_list(*head), 1);
+	}
+	return (0);
+}
+
 t_cmd	*parse_tokens(char **tk, t_env *env)
 {
 	t_cmd	*head;
 	t_cmd	*cur;
-	int		i;
 
 	head = NULL;
 	cur = NULL;
-	i = 0;
 	if (!tk || !tk[0])
 		return (NULL);
 	if (!ft_strcmp(tk[0], "|"))
-		return (print_syntax_error("|"), NULL);
-	while (tk[i])
 	{
-		if (process_segment(&head, &cur, tk, &i, env))
-			return (NULL);
-		if (tk[i] && !ft_strcmp(tk[i], "|"))
-		{
-			i++;
-			if (handle_pipe_errors(tk, i, cur))
-				return (free_cmd_list(head), NULL);
-		}
-		else if (tk[i] && !ft_strcmp(tk[i], ";"))
-		{
-			cur->cmd_separator = 1;
-			i++;
-			if (!tk[i] || !ft_strcmp(tk[i], ";")
-				|| !ft_strcmp(tk[i], "|"))
-				return (print_syntax_error(tk[i]),
-					free_cmd_list(head), NULL);
-		}
-		else if (tk[i])
-			return (print_syntax_error(tk[i]),
-				free_cmd_list(head), NULL);
+		print_syntax_error("|");
+		return (NULL);
 	}
+	if (parse_tokens_loop(tk, env, &head, &cur))
+		return (NULL);
 	return (head);
 }
 

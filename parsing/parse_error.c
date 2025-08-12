@@ -14,8 +14,7 @@
 
 int	print_syntax_error(const char *tok)
 {
-	const char	*prefix =
-		"minishell: syntax error near unexpected token `";
+	const char	*prefix = "minishell: syntax error near unexpected token `";
 	const char	*suffix = "'\n";
 
 	if (!tok)

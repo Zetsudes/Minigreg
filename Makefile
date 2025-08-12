@@ -19,8 +19,10 @@ SRC = env/env_list.c \
 	  builtins/export.c \
 	  builtins/handle_builtin.c \
 	  parsing/parse_args.c \
+	  parsing/parse_args_utils.c \
 	  parsing/parse_core.c \
 	  parsing/parse_error.c \
+	  parsing/parse_redir_utils.c \
 	  parsing/parse_redir.c \
 	  parsing/parse_segment.c \
 	  parsing/parse_utils.c \
