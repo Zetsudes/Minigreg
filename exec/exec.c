@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/13 20:51:51 by marvin            #+#    #+#             */
+/*   Updated: 2025/08/13 20:51:51 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Executes commands with / without pipes <3
+<3 Executes single command with/without pipes <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
 int	execute_single_command(t_cmd *cmd, t_env **env)
@@ -33,6 +44,11 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 	return (run_parent_process(pid, fd_in, fd_out));
 }
 
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Executes a pipeline <3
+<3<3<3<3<3<3<3<3<3<3<3<3
+*/
 int	execute_commands(t_cmd *cmd_list, t_env **env)
 {
 	t_pipeline	pipeline;
@@ -56,6 +72,11 @@ int	execute_commands(t_cmd *cmd_list, t_env **env)
 	return (result);
 }
 
+/*
+<3<3<3<3<3<3<3<3<3<3
+<3 Runs a builtin <3
+<3<3<3<3<3<3<3<3<3<3
+*/
 int	execute_builtin(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 {
 	int	saved[2];
@@ -79,6 +100,11 @@ int	execute_builtin(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 	return (result);
 }
 
+/*
+<3<3<3<3<3<3<3<3<3<3
+<3 Child process <3
+<3<3<3<3<3<3<3<3<3<3
+*/
 void	run_child_process(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 {
 	if (fd_in != STDIN_FILENO)
@@ -94,13 +120,17 @@ void	run_child_process(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 	exec_command(cmd, env);
 }
 
-
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Executes sequences <3
+<3<3<3<3<3<3<3<3<3<3<3<3
+*/
 int	execute_command_sequence(t_cmd *cmd_list, t_env **env)
 {
 	t_cmd	*next;
 	t_cmd	*after;
 	int		status;
-	
+
 	status = 0;
 	while (cmd_list)
 	{

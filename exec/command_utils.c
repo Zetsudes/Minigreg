@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   command_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/13 20:49:12 by marvin            #+#    #+#             */
+/*   Updated: 2025/08/13 20:49:12 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
 void	validate_path(char *path, char **envp)
 {
-	struct stat statbuf;
+	struct	stat	statbuf;
 
 	if (stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
 	{

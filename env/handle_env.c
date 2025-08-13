@@ -1,29 +1,38 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   handle_env.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/13 12:40:00 by 42                #+#    #+#             */
+/*   Updated: 2025/08/13 12:40:00 by 42               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 <3 Searches for env var by key and returns its value            <3
-<3 Used to get values like HOME, PATH, PWD, ...                 <3 
+<3 Used to get values like HOME, PATH, PWD, ...                 <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-char    *get_env_value(t_env *env, char *key)
+char	*get_env_value(t_env *env, char *key)
 {
-
-    while (env)
-    {
-        if (ft_strcmp(key, env->key) == 0) // Checks if keys match <3
-            return (env->value);
-        env = env->next;
-    }
-    return (NULL);
+	while (env)
+	{
+		if (ft_strcmp(key, env->key) == 0)
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
 }
 
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Sets/updates env var with  given key and value             <3
-<3 If var exists updates its value. If not, creates a new one <3 
+<3 Sets/updates env var with given key and value               <3
+<3 If var exists updates its value. If not, creates a new one  <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
 int	set_env_value(t_env **env, char *key, char *value)
@@ -33,27 +42,27 @@ int	set_env_value(t_env **env, char *key, char *value)
 	tmp = *env;
 	while (tmp)
 	{
-		if (ft_strcmp(key, tmp->key) == 0) // Tries to find existing key <3
+		if (ft_strcmp(key, tmp->key) == 0)
 		{
-			free(tmp->value); // Found -> updates its value <3
+			free(tmp->value);
 			if (value)
 				tmp->value = ft_strdup(value);
 			else
-				tmp->value = ft_strdup(""); // Empty string if NULL value <3
+				tmp->value = ft_strdup("");
 			if (!tmp->value)
 				return (0);
 			return (1);
 		}
 		tmp = tmp->next;
 	}
-	return (add_new_env_node(env, key, value)); // Key not found -> create new one <3
+	return (add_new_env_node(env, key, value));
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 <3 Converts env list to an array of strings <3
-<3 "KEY=VALUE" format                       <3 
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 "KEY=VALUE" format                       <3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
 char	**env_to_array(t_env *env)
 {
@@ -70,6 +79,12 @@ char	**env_to_array(t_env *env)
 	return (arr);
 }
 
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Initializes env list when no envp is provided              <3
+<3 Creates a minimal env with PWD, PATH, HOME, SHLVL          <3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+*/
 t_env	*init_minimal_env(void)
 {
 	t_env	*first;

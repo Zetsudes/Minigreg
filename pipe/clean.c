@@ -18,31 +18,28 @@ void	close_all_pipes(t_pipeline *pipeline)
 	}
 }
 
-void    cleanup_pipeline(t_pipeline *p)
+void	cleanup_pipeline(t_pipeline *p)
 {
-    int i;
+	int i;
 
-    /* --- fermer & libérer les pipes --- */
-    if (p->pipes)
-    {
-        i = 0;
-        while (i < p->cmd_count - 1)
-        {
-            if (p->pipes[i])
-            {
-                close(p->pipes[i][0]);
-                close(p->pipes[i][1]);
-                free(p->pipes[i]);
-            }
-            i++;
-        }
-        free(p->pipes);
-        p->pipes = NULL;
-    }
-
-    /* --- libérer seulement le tableau de pointeurs, PAS les t_cmd --- */
-    free(p->cmds);
-    p->cmds = NULL;
+	if (p->pipes)
+	{
+		i = 0;
+		while (i < p->cmd_count - 1)
+		{
+			if (p->pipes[i])
+			{
+				close(p->pipes[i][0]);
+				close(p->pipes[i][1]);
+				free(p->pipes[i]);
+			}
+			i++;
+		}
+		free(p->pipes);
+		p->pipes = NULL;
+	}
+	free(p->cmds);
+	p->cmds = NULL;
 }
 
 void	cleanup_partial_pipes(t_pipeline *pipeline, int allocated_count)

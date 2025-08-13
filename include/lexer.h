@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/13 21:04:22 by marvin            #+#    #+#             */
+/*   Updated: 2025/08/13 21:04:22 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LEXER_H
 # define LEXER_H
 
@@ -12,10 +24,10 @@ typedef struct s_builder
 
 typedef enum e_state
 {
-    GENERAL,
-    IN_SQ,
-    IN_DQ
-}   t_state;
+	GENERAL,
+	IN_SQ,
+	IN_DQ
+}	t_state;
 
 typedef struct s_lexer
 {
@@ -25,7 +37,6 @@ typedef struct s_lexer
 	t_builder	w;
 	t_state		st;
 }	t_lexer;
-
 
 char	**tokenize_line(char *line);
 int		is_operator(char c);

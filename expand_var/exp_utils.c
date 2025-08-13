@@ -59,7 +59,9 @@ int	append_str(char **dst, const char *add)
 
 	if (!add)
 		return (1);
-	len = *dst ? ft_strlen(*dst) : 0;
+	len = 0;
+	if (*dst)
+		len = ft_strlen(*dst);
 	al = ft_strlen(add);
 	new = malloc(len + al + 1);
 	if (!new)
