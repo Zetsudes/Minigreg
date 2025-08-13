@@ -20,6 +20,14 @@ void	free_env_list(t_env *head)
 	}
 }
 
+void	*handle_alloc_failure(char *key, char *value, t_env *first)
+{
+	free(key);
+	free(value);
+	free_env_list(first);
+	return (NULL);
+}
+
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 <3 Creates a new env node and adds it to the beginning of the list  <3
@@ -33,7 +41,6 @@ int	add_new_env_node(t_env **env, char *key, char *value)
 	new = create_node(key, value);
 	if (!new)
 		return (0); // no need to free 'new' or call free_env_list
-
 	new->next = *env;
 	*env = new;
 	return (1);
@@ -83,30 +90,3 @@ int	env_list_size(t_env *env)
 	return (size);
 }
 
-/*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Fills array with "KEY=VALUE"                                 <3
-<3 Converts list to array                                       <3
-<3 Helper function used in env_to_array() in handle_env.c file  <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-*/
-int	fill_env_array(char **arr, t_env *env)
-{
-	int	i;
-
-	i = 0;
-	while (env)
-	{
-		arr[i] = ft_strjoin_3(env->key, "=", env->value);
-		if (!arr[i])
-		{
-			while (i > 0)
-				free(arr[--i]);
-			return (0);
-		}
-		env = env->next;
-		i++;
-	}
-	arr[i] = NULL;
-	return (1);
-}

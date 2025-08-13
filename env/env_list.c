@@ -61,34 +61,26 @@ char	*get_split_value(char **split, t_env *first)
 <3 Used to process env var and create a node            <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
-t_env   *handle_var(char *env_str, t_env *first)
+t_env	*handle_var(char *env_str, t_env *first)
 {
-        t_env   *new_node;
-        char    *eq;
-        char    *key;
-        char    *value;
+	t_env	*new_node;
+	char	*eq;
+	char	*key;
+	char	*value;
 
-        eq = ft_strchr(env_str, '=');
-        if (!eq)
-                return (create_node(env_str, ""));
-        key = ft_substr(env_str, 0, eq - env_str);
-        value = ft_strdup(eq + 1);
-        if (!key || !value)
-        {
-                free(key);
-                free(value);
-                free_env_list(first);
-                return (NULL);
-        }
-        new_node = create_node(key, value);
-        free(key);
-        free(value);
-        if (!new_node)
-        {
-                free_env_list(first);
-                return (NULL);
-        }
-        return (new_node);
+	eq = ft_strchr(env_str, '=');
+	if (!eq)
+		return (create_node(env_str, ""));
+	key = ft_substr(env_str, 0, eq - env_str);
+	value = ft_strdup(eq + 1);
+	if (!key || !value)
+		return (handle_alloc_failure(key, value, first));
+	new_node = create_node(key, value);
+	free(key);
+	free(value);
+	if (!new_node)
+		return (handle_alloc_failure(NULL, NULL, first));
+	return (new_node);
 }
 
 /*

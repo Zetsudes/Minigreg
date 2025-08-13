@@ -67,14 +67,13 @@ int	exit_builtin(char **args)
 	int	exit_code;
 
 	exit_code = 0;
-	write(1, "exit\n", 5);
+	if (isatty(STDIN_FILENO))  // Only print "exit" if stdin is a terminal
+		write(1, "exit\n", 5);
 	if (!args[1])
 		exit(0);
 	if (!is_numeric(args[1]))
 	{
-		ft_putstr_fd("exit: ", 2);
-		ft_putstr_fd(args[1], 2);
-		ft_putendl_fd(": numeric argument required", 2);
+		print_error_message(args, 1, "exit: ", ": numeric argument required");
 		exit(2);
 	}
 	exit_code = atoi(args[1]);
@@ -114,13 +113,6 @@ int	pwd(char **av, t_env **env)
 	return (0);
 }
 
-static void	print_unset_error(const char *arg)
-{
-	ft_putstr_fd("unset: `", 2);
-	ft_putstr_fd((char *)arg, 2);
-	ft_putendl_fd("': not a valid identifier", 2);
-}
-
 /*
 ** Implementation of the unset builtin command.
 ** Removes environment variable(s) from env.
@@ -138,7 +130,7 @@ int	unset(char **args, t_env **env)
 	{
 		if (!is_valid_identifier(args[i]) || args[i][0] == '\0')
 		{
-			print_unset_error(args[i]);
+			print_error_message(args, i, "unset: `", "': not a valid identifier");
 			status = 1;
 		}
 		else

@@ -45,6 +45,24 @@ void    cleanup_pipeline(t_pipeline *p)
     p->cmds = NULL;
 }
 
+void	cleanup_partial_pipes(t_pipeline *pipeline, int allocated_count)
+{
+	int	i;
+
+	i = 0;
+	while (i < allocated_count)
+	{
+		if (pipeline->pipes[i])
+		{
+			close(pipeline->pipes[i][0]);
+			close(pipeline->pipes[i][1]);
+			free(pipeline->pipes[i]);
+		}
+		i++;
+	}
+	free(pipeline->pipes);
+}
+
 int	handle_fork_error(pid_t *pids, int i, t_pipeline *pipeline)
 {
 	perror("fork");
@@ -53,4 +71,12 @@ int	handle_fork_error(pid_t *pids, int i, t_pipeline *pipeline)
 	cleanup_pipeline(pipeline);
 	free(pids);
 	return (1);
+}
+
+void	cleanup_and_exit(char **envp, char *path, int exit_code)
+{
+	free_tab(envp);
+	if (path)
+		free(path);
+	exit(exit_code);
 }

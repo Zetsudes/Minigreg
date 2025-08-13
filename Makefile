@@ -8,8 +8,10 @@ CFLAGS = -Wall -Wextra -Werror -fPIE
 SRC = env/env_list.c \
 	  env/env_utils.c \
 	  env/handle_env.c \
-	  exec/test.c \
+	  exec/main.c \
+	  exec/main_utils.c \
 	  exec/exec.c \
+	  exec/command_utils.c \
 	  exec/path.c \
 	  exec/redirections.c \
 	  exec/exec_utils.c \
@@ -17,6 +19,7 @@ SRC = env/env_list.c \
 	  builtins/builtins_utils.c \
 	  builtins/cd.c \
 	  builtins/export.c \
+	  builtins/export_utils.c \
 	  builtins/handle_builtin.c \
 	  parsing/parse_args.c \
 	  parsing/parse_args_utils.c \

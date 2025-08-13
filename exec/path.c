@@ -1,6 +1,5 @@
 
 #include "../include/minishell.h"
-#include <dirent.h>
 
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3

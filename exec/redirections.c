@@ -14,20 +14,27 @@ int	handle_heredoc(t_cmd *cmd)
 	line = get_next_line(0);
 	while (line)
 	{
-		if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
-			&& (line[ft_strlen(limiter)] == '\n'
-				|| line[ft_strlen(limiter)] == '\0'))
-		{
-			free(line);
+		if (process_heredoc_line(line, limiter, pipe_fd[1]))
 			break ;
-		}
-		ft_putstr_fd(line, pipe_fd[1]);
 		free(line);
 		ft_putstr_fd("heredoc> ", 1);
 		line = get_next_line(0);
 	}
 	close(pipe_fd[1]);
 	return (pipe_fd[0]);
+}
+
+int	process_heredoc_line(char *line, char *limiter, int write_fd)
+{
+	if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
+		&& (line[ft_strlen(limiter)] == '\n'
+			|| line[ft_strlen(limiter)] == '\0'))
+	{
+		free(line);
+		return (1);
+	}
+	ft_putstr_fd(line, write_fd);
+	return (0);
 }
 
 int	handle_input_redirection(t_cmd *cmd, int *fd_in)

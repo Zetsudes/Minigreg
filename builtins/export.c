@@ -12,71 +12,19 @@
 
 #include "../include/minishell.h"
 
-static char	*expand_export_key(const char *key, t_env *env)
-{
-	if (key[0] != '$')
-		return (ft_strdup((char *)key));
-	key++;
-	if (!*key)
-		return (NULL);
-	return (ft_strdup(get_env_value(env, (char *)key)));
-}
-
-static int	export_with_equal(char *arg, t_env **env, t_env *current_env)
-{
-	char	*eq;
-	char	*raw_key;
-	char	*key;
-	char	*joined;
-
-	eq = ft_strchr(arg, '=');
-	raw_key = ft_substr(arg, 0, eq - arg);
-	if (!raw_key)
-		return (1);
-	key = expand_export_key(raw_key, current_env);
-	free(raw_key);
-	if (!key || !is_valid_identifier(key))
-	{
-		ft_putstr_fd("export: `", 2);
-		ft_putstr_fd(arg, 2);
-		ft_putendl_fd("': not a valid identifier", 2);
-		free(key);
-		return (1);
-	}
-	joined = ft_strjoin(key, eq);
-	set_and_assign(joined, env);
-	free(joined);
-	free(key);
-	return (0);
-}
-
 int	export(char **args, t_env **env)
 {
 	int		i;
 	int		status;
+
 	i = 1;
 	status = 0;
-	
 	if (!args[1])
 		return (print_env_export(*env));
 	while (args[i])
 	{
-		if (ft_strchr(args[i], '='))
-		{
-			if (export_with_equal(args[i], env, *env))
-				status = 1;
-			i++;
-			continue ;
-		}
-		if (!is_valid_identifier(args[i]))
-		{
-			ft_putstr_fd("export: `", 2);
-			ft_putstr_fd(args[i], 2);
-			ft_putendl_fd("': not a valid identifier", 2);
+		if (handle_export_arg(args, i, env))
 			status = 1;
-		}
-		else
-			set_env_value(env, args[i], NULL);
 		i++;
 	}
 	return (status);

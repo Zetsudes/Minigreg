@@ -34,5 +34,6 @@ char				*ft_strjoin_3(const char *s1, const char *s2,
 int					add_new_env_node(t_env **env, char *key, char *value);
 int					env_list_size(t_env *env);
 int					fill_env_array(char **arr, t_env *env);
+void				*handle_alloc_failure(char *key, char *value, t_env *first);
 
 #endif

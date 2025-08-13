@@ -29,12 +29,17 @@ int			set_and_assign(char *arg, t_env **env);
 int			print_env_export(t_env *env);
 int			is_valid_identifier(const char *str);
 void		append_node(t_env **env, t_env *new_node);
+char		*expand_export_key(const char *key, t_env *env);
+int			export_with_equal(char *arg, t_env **env, t_env *current_env);
+int			handle_export_arg(char **args, int i, t_env **env);
 
 /********** UTILS ***********/
 int			is_valid_n_flag(const char *arg);
 int			is_numeric(const char *str);
 int			unset_single_var(t_env **env, char *key);
-t_env	**copy_env_to_array(t_env *env, int size);
-void	sort_env_by_key(t_env **arr, int size);
+t_env		**copy_env_to_array(t_env *env, int size);
+void		sort_env_by_key(t_env **arr, int size);
+void		print_error_message(char **args, int i, char *prefix, char *suffix);
+void		print_error_message_str(char *str, char *prefix, char *suffix);
 
 #endif

@@ -1,5 +1,5 @@
-#include "../include/minishell.h"
-#include <errno.h>
+
+# include "../include/minishell.h"
 
 void	free_tab(char **tab)
 {
@@ -34,20 +34,18 @@ t_cmd	**cmd_list_to_array(t_cmd *cmd_list, int *count)
 	i = 0;
 	while (curr)
 	{
-		cmd_array[i] = curr;
+		cmd_array[i++] = curr;
 		curr = curr->next;
-		i++;
 	}
 	cmd_array[i] = NULL;
 	return (cmd_array);
 }
 
-static void	handle_execve_error(t_cmd *cmd, char **envp)
+void	handle_execve_error(t_cmd *cmd, char **envp)
 {
 	if (errno == EACCES)
 	{
-		ft_putstr_fd(cmd->args[0], 2);
-		ft_putendl_fd(": Permission denied", 2);
+		print_error_message(cmd->args, 0, "", ": Permission denied");
 		free_tab(envp);
 		exit(126);
 	}
@@ -56,9 +54,7 @@ static void	handle_execve_error(t_cmd *cmd, char **envp)
 		free_tab(envp);
 		exit(0);
 	}
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(cmd->args[0], 2);
-	ft_putstr_fd(": ", 2);
+	print_error_message(cmd->args, 0, "minishell: ", ": ");
 	ft_putendl_fd(strerror(errno), 2);
 	free_tab(envp);
 	exit(1);
@@ -68,7 +64,6 @@ void	exec_command(t_cmd *cmd, t_env **env)
 {
 	char	**envp;
 	char	*path;
-	struct stat statbuf;
 
 	envp = env_to_array(*env);
 	if (!envp)
@@ -76,30 +71,10 @@ void	exec_command(t_cmd *cmd, t_env **env)
 	path = get_path(cmd->args[0], envp);
 	if (!path)
 	{
-		ft_putstr_fd(cmd->args[0], 2);
-		ft_putendl_fd(": command not found", 2);
-		free_tab(envp);
-		exit(127);
+		print_error_message_str(cmd->args[0], "", ": command not found");
+		cleanup_and_exit(envp, NULL, 127);
 	}
-	
-	// ADD THIS: Check if it's a directory
-	if (stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
-	{
-		ft_putstr_fd(path, 2);
-		ft_putendl_fd(": is a directory", 2);
-		free_tab(envp);
-		free(path);  // Don't forget to free path!
-		exit(126);
-	}
-	
-	if (access(path, F_OK) == 0 && access(path, X_OK) != 0)
-	{
-		ft_putstr_fd(path, 2);
-		ft_putendl_fd(": Permission denied", 2);
-		free_tab(envp);
-		free(path);  // Don't forget to free path!
-		exit(126);
-	}
+	validate_path(path, envp);
 	execve(path, cmd->args, envp);
 	handle_execve_error(cmd, envp);
 }

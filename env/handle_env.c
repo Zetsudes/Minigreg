@@ -96,3 +96,31 @@ t_env	*init_minimal_env(void)
 		add_node(&first, &last, node);
 	return (first);
 }
+
+/*
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+<3 Fills array with "KEY=VALUE"                                 <3
+<3 Converts list to array                                       <3
+<3 Helper function used in env_to_array() in handle_env.c file  <3
+<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+*/
+int	fill_env_array(char **arr, t_env *env)
+{
+	int	i;
+
+	i = 0;
+	while (env)
+	{
+		arr[i] = ft_strjoin_3(env->key, "=", env->value);
+		if (!arr[i])
+		{
+			while (i > 0)
+				free(arr[--i]);
+			return (0);
+		}
+		env = env->next;
+		i++;
+	}
+	arr[i] = NULL;
+	return (1);
+}
