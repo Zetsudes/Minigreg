@@ -3,7 +3,7 @@ LIBFT_DIR = greg_lib
 LIBFT = $(LIBFT_DIR)/libft.a
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -fPIE
+CFLAGS = -Wall -Wextra -Werror
 
 SRC = env/env_list.c \
 	  env/env_utils.c \
