@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 21:00:02 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/14 09:30:01 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 10:01:28 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ int			handle_builtin(t_cmd *cmd, t_env **env);
 /********** CD UTILS ***********/
 char		*get_fallback_pwd(const char *arg, char *oldpwd);
 char		*get_cd_target(char **av, t_env **env);
+char		*pop_last(const char *oldpwd);
 
 /********** EXPORT UTILS ***********/
 int			set_and_assign(char *arg, t_env **env);

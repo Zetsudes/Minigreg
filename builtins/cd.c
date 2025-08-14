@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:23:51 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/14 09:27:34 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 10:01:21 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	print_getcwd_warning(void)
 					STDERR_FILENO);
 }
 
-static char	*pop_last(const char *oldpwd)
+char	*pop_last(const char *oldpwd)
 {
 	char	*dup;
 	char	*slash;

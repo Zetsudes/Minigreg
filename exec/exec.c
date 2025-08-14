@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:51:51 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/14 09:28:43 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:56:37 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,15 +79,21 @@ int	execute_commands(t_cmd *cmd_list, t_env **env)
 */
 int	execute_builtin(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 {
-	int	saved_in;
-	int	saved_out;
+	int	saved[2];
 	int	result;
 
-	saved_in = save_fd(fd_in, STDIN_FILENO);
-	saved_out = save_fd(fd_out, STDOUT_FILENO);
+	save_fds(fd_in, fd_out, saved);
 	result = handle_builtin(cmd, env);
-	restore_fd(saved_in, STDIN_FILENO);
-	restore_fd(saved_out, STDOUT_FILENO);
+	if (saved[0] != -1)
+	{
+		dup2(saved[0], STDIN_FILENO);
+		close(saved[0]);
+	}
+	if (saved[1] != -1)
+	{
+		dup2(saved[1], STDOUT_FILENO);
+		close(saved[1]);
+	}
 	if (fd_in != STDIN_FILENO)
 		close(fd_in);
 	if (fd_out != STDOUT_FILENO)
