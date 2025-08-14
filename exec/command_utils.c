@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:49:12 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/13 20:49:12 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:28:30 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	validate_path(char *path, char **envp)
 {
-	struct	stat	statbuf;
+	struct stat	statbuf;
 
 	if (stat(path, &statbuf) == 0 && S_ISDIR(statbuf.st_mode))
 	{
@@ -67,4 +67,22 @@ int	process_command_group(t_cmd *cmd_list, t_env **env)
 		free(status_str);
 	}
 	return (status);
+}
+
+void	save_fds(int fd_in, int fd_out, int saved[2])
+{
+	saved[0] = -1;
+	saved[1] = -1;
+	if (fd_in != STDIN_FILENO)
+	{
+		saved[0] = dup(STDIN_FILENO);
+		if (saved[0] != -1)
+			dup2(fd_in, STDIN_FILENO);
+	}
+	if (fd_out != STDOUT_FILENO)
+	{
+		saved[1] = dup(STDOUT_FILENO);
+		if (saved[1] != -1)
+			dup2(fd_out, STDOUT_FILENO);
+	}
 }

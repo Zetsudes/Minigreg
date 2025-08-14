@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lex_handlers1.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 08:24:34 by marvin            #+#    #+#             */
-/*   Updated: 2025/07/21 08:24:34 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:31:52 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,7 @@ int	handle_backslash(const char *ln, size_t *i, t_lexer *lx)
 {
 	if (ln[*i] == '\\' && lx->st != IN_SQ && ln[*i + 1])
 	{
-		if (!builder_push(&lx->w, '\\')
-			|| !builder_push(&lx->w, ln[*i + 1]))
+		if (!builder_push(&lx->w, '\\') || !builder_push(&lx->w, ln[*i + 1]))
 			return (-1);
 		*i += 2;
 		return (1);

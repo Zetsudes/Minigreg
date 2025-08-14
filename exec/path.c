@@ -1,20 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_path.c                                         :+:      :+:    :+:   */
+/*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 13:12:00 by 42                #+#    #+#             */
-/*   Updated: 2025/08/13 13:12:00 by 42               ###   ########.fr       */
+/*   Updated: 2025/08/14 09:29:01 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 <3 Searches through PATH if command exists  <3
-<3 Helper function used in get_path() below <3 
+<3 Helper function used in get_path() below <3
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 */
 char	*find_path(char **dir, char *cmd)

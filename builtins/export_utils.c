@@ -1,14 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/14 08:46:13 by zamohame          #+#    #+#             */
+/*   Updated: 2025/08/14 09:27:42 by zamohame         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	print_error_message(char **args, int i, char *prefix, char *suffix) // Array <3
+void	print_error_message(char **args, int i, char *prefix, char *suffix)
 {
 	ft_putstr_fd(prefix, 2);
 	ft_putstr_fd(args[i], 2);
 	ft_putendl_fd(suffix, 2);
 }
 
-void	print_error_message_str(char *str, char *prefix, char *suffix) // String <3
+void	print_error_message_str(char *str, char *prefix, char *suffix)
 {
 	ft_putstr_fd(prefix, 2);
 	ft_putstr_fd(str, 2);
@@ -57,7 +68,7 @@ int	export_with_equal(char *arg, t_env **env, t_env *current_env)
 	free(raw_key);
 	if (!key || !is_valid_identifier(key))
 	{
-		 print_error_message_str(arg, "export: `", "': not a valid identifier");
+		print_error_message_str(arg, "export: `", "': not a valid identifier");
 		free(key);
 		return (1);
 	}

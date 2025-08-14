@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 08:18:53 by marvin            #+#    #+#             */
-/*   Updated: 2025/07/21 08:18:53 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:33:00 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,9 @@ int	is_token_operator(const char *token)
 {
 	if (!token)
 		return (0);
-	return (!ft_strcmp(token, "<")
-		|| !ft_strcmp(token, ">")
-		|| !ft_strcmp(token, "<<")
-		|| !ft_strcmp(token, ">>")
-		|| !ft_strcmp(token, "|")
-		|| !ft_strcmp(token, ";"));
+	return (!ft_strcmp(token, "<") || !ft_strcmp(token, ">")
+		|| !ft_strcmp(token, "<<") || !ft_strcmp(token, ">>")
+		|| !ft_strcmp(token, "|") || !ft_strcmp(token, ";"));
 }
 
 int	count_args(char **tokens, int i)
@@ -29,8 +26,7 @@ int	count_args(char **tokens, int i)
 	int	count;
 
 	count = 0;
-	while (tokens[i] && tokens[i][0] != '|'
-		&& tokens[i][0] != ';'
+	while (tokens[i] && tokens[i][0] != '|' && tokens[i][0] != ';'
 		&& tokens[i][0] != '<' && tokens[i][0] != '>')
 	{
 		count++;

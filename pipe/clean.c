@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   clean.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/14 08:39:24 by zamohame          #+#    #+#             */
+/*   Updated: 2025/08/14 09:33:26 by zamohame         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 void	close_all_pipes(t_pipeline *pipeline)
@@ -20,7 +32,7 @@ void	close_all_pipes(t_pipeline *pipeline)
 
 void	cleanup_pipeline(t_pipeline *p)
 {
-	int i;
+	int	i;
 
 	if (p->pipes)
 	{

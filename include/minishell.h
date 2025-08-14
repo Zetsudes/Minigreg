@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:47:37 by zamohame          #+#    #+#             */
-/*   Updated: 2025/06/21 16:16:34 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:30:54 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@
 # include "builtins.h"
 # include "env.h"
 # include "exec.h"
-# include "pipe.h"
-# include "signals.h"
 # include "lexer.h"
 # include "parsing.h"
+# include "pipe.h"
+# include "signals.h"
 
 void	init_signals(void);
 

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exp_dollar.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 08:25:20 by marvin            #+#    #+#             */
-/*   Updated: 2025/07/21 08:25:20 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:29:17 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/expend.h"
+#include "../include/expand.h"
 
 int	handle_dollar(const char *in, int *i, char **out, t_env *env)
 {

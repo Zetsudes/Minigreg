@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 08:07:29 by marvin            #+#    #+#             */
-/*   Updated: 2025/07/21 08:07:29 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:26:21 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	exit_builtin(char **args)
 	int	exit_code;
 
 	exit_code = 0;
-	if (isatty(STDIN_FILENO))  // Only print "exit" if stdin is a terminal
+	if (isatty(STDIN_FILENO))
 		write(1, "exit\n", 5);
 	if (!args[1])
 		exit(0);
@@ -130,7 +130,8 @@ int	unset(char **args, t_env **env)
 	{
 		if (!is_valid_identifier(args[i]) || args[i][0] == '\0')
 		{
-			print_error_message(args, i, "unset: `", "': not a valid identifier");
+			print_error_message(args, i, "unset: `",
+				"': not a valid identifier");
 			status = 1;
 		}
 		else

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 15:30:00 by 42                #+#    #+#             */
-/*   Updated: 2025/08/12 15:30:00 by 42               ###   ########.fr       */
+/*   Updated: 2025/08/14 09:32:27 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,7 @@ int	count_effective_args(char **tk, int j, t_env *env)
 			continue ;
 		}
 		tmp = process_token(tk[j], env);
-		if (tmp && (tmp[0] != '\0'
-				|| token_is_quoted(tk[j])
+		if (tmp && (tmp[0] != '\0' || token_is_quoted(tk[j])
 				|| is_empty_quotes(tk[j])))
 			count++;
 		free(tmp);
@@ -100,8 +99,7 @@ char	**copy_args(char **tokens, int *i, t_cmd *cmd, t_env *env)
 	char	**args;
 
 	j = *i;
-	args = malloc(sizeof(char *)
-			* (count_effective_args(tokens, j, env) + 1));
+	args = malloc(sizeof(char *) * (count_effective_args(tokens, j, env) + 1));
 	if (!args)
 		return (NULL);
 	k = 0;

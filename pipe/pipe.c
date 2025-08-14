@@ -1,5 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipe.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/14 08:39:08 by zamohame          #+#    #+#             */
+/*   Updated: 2025/08/14 09:33:37 by zamohame         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# include "../include/minishell.h"
+#include "../include/minishell.h"
 
 int	init_pipes(t_pipeline *pipeline)
 {
@@ -86,7 +97,8 @@ int	execute_commands_pipeline(t_pipeline *pipeline, pid_t *pids)
 }
 
 // Execute individual command in pipeline
-void	execute_pipeline_command(t_pipeline *pipeline, int cmd_index, int fd_in, t_env **env)
+void	execute_pipeline_command(t_pipeline *pipeline, int cmd_index, int fd_in,
+		t_env **env)
 {
 	t_cmd	*cmd;
 	int		fd_out;

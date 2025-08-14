@@ -18,6 +18,7 @@ SRC = env/env_list.c \
 	  builtins/builtins.c \
 	  builtins/builtins_utils.c \
 	  builtins/cd.c \
+	  builtins/cd_utils.c \
 	  builtins/export.c \
 	  builtins/export_utils.c \
 	  builtins/handle_builtin.c \

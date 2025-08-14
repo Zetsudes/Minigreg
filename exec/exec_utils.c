@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:57:19 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/13 20:57:19 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:28:36 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../include/minishell.h"
+#include "../include/minishell.h"
 
 void	free_tab(char **tab)
 {
@@ -29,7 +29,7 @@ t_cmd	**cmd_list_to_array(t_cmd *cmd_list, int *count)
 {
 	t_cmd	**cmd_array;
 	t_cmd	*curr;
-	int	i;
+	int		i;
 
 	*count = 0;
 	curr = cmd_list;

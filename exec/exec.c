@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:51:51 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/13 20:51:51 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:28:43 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,20 +79,15 @@ int	execute_commands(t_cmd *cmd_list, t_env **env)
 */
 int	execute_builtin(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 {
-	int	saved[2];
+	int	saved_in;
+	int	saved_out;
 	int	result;
 
-	saved[0] = -1;
-	saved[1] = -1;
-	if (fd_in != STDIN_FILENO && (saved[0] = dup(STDIN_FILENO)) != -1)
-		dup2(fd_in, STDIN_FILENO);
-	if (fd_out != STDOUT_FILENO && (saved[1] = dup(STDOUT_FILENO)) != -1)
-		dup2(fd_out, STDOUT_FILENO);
+	saved_in = save_fd(fd_in, STDIN_FILENO);
+	saved_out = save_fd(fd_out, STDOUT_FILENO);
 	result = handle_builtin(cmd, env);
-	if (saved[0] != -1 && (dup2(saved[0], STDIN_FILENO), 1))
-		close(saved[0]);
-	if (saved[1] != -1 && (dup2(saved[1], STDOUT_FILENO), 1))
-		close(saved[1]);
+	restore_fd(saved_in, STDIN_FILENO);
+	restore_fd(saved_out, STDOUT_FILENO);
 	if (fd_in != STDIN_FILENO)
 		close(fd_in);
 	if (fd_out != STDOUT_FILENO)

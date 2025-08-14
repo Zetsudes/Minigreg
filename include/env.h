@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 21:00:16 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/13 21:00:16 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:30:07 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int					set_and_assign(char *arg, t_env **env);
 void				append_node(t_env **env, t_env *new_node);
 
 /********** MINIMAL ENVIRONMENT ***********/
-t_env	*init_minimal_env(void);
+t_env				*init_minimal_env(void);
 
 /********** ENV UTILS ***********/
 void				free_env_list(t_env *head);

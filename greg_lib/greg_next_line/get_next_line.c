@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:23 by zamohame          #+#    #+#             */
-/*   Updated: 2025/04/29 17:25:40 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:35:20 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,11 @@ int	handle_line(int fd, char **buffer, char *temp)
 
 char	*get_next_line(int fd)
 {
-	static char *buffer = NULL;
-	char *line;
-	char *temp;
+	static char	*buffer = NULL;
+	char		*line;
+	char		*temp;
 
+	buffer = NULL;
 	temp = malloc(BUFFER_SIZE + 1);
 	if (fd < 0 || BUFFER_SIZE <= 0 || !temp)
 	{

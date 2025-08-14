@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:47:32 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/13 21:20:00 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:30:29 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,20 @@
 # define EXEC_H
 
 # include "env.h"
-# include "pipe.h"
 # include "parsing.h" /* pour t_cmd */
-
+# include "pipe.h"
+# include <dirent.h>
+# include <errno.h>
 # include <limits.h>
+# include <linux/limits.h>
 # include <readline/history.h>
 # include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
-# include <dirent.h>
-# include <errno.h>
 # include <string.h>
-# include <sys/wait.h>
-# include <sys/types.h>
 # include <sys/stat.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 
 /* ---------- EXECUTION API ---------- */
 int		execute_single_command(t_cmd *cmd, t_env **env);
@@ -41,6 +41,7 @@ int		execute_command_sequence(t_cmd *cmd_list, t_env **env);
 void	validate_path(char *path, char **envp);
 int		setup_and_validate_command(t_cmd *cmd, int *fd_in, int *fd_out);
 int		process_command_group(t_cmd *cmd_list, t_env **env);
+void	save_fds(int fd_in, int fd_out, int saved[2]);
 
 /* ---------- ERRORS ---------- */
 void	handle_execve_error(t_cmd *cmd, char **envp);

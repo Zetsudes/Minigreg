@@ -1,38 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   cd_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/13 20:57:33 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/14 09:28:55 by zamohame         ###   ########.fr       */
+/*   Created: 2025/08/14 08:17:34 by zamohame          #+#    #+#             */
+/*   Updated: 2025/08/14 09:27:26 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	main(int argc, char **argv, char **envp)
+char	*get_cd_target(char **av, t_env **env)
 {
-	char		*line;
-	t_env		*env;
-	const char	*prompt;
+	char	*target;
 
-	(void)argc;
-	(void)argv;
-	env = init_list(envp);
-	set_env_value(&env, "?", "0");
-	init_signals();
-	prompt = ORANGE "🔥 minihell$ " RESET;
-	while (1)
+	target = av[1];
+	if (!target || !*target)
 	{
-		line = get_input_line(prompt);
-		if (!line)
-			break ;
-		if (*line)
-			process_command_line(line, &env);
-		free(line);
+		target = get_env_value(*env, "HOME");
+		if (!target)
+		{
+			ft_putendl_fd("cd: HOME not set", STDERR_FILENO);
+			return (NULL);
+		}
+		if (!*target)
+			return (NULL);
 	}
-	free_env_list(env);
-	return (0);
+	return (target);
+}
+
+char	*get_fallback_pwd(const char *arg, char *oldpwd)
+{
+	if (ft_strcmp(arg, "..") == 0)
+		return (pop_last(oldpwd));
+	return (ft_strdup((char *)oldpwd));
 }

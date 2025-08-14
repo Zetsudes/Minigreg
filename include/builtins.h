@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 21:00:02 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/13 21:00:02 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:30:01 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,10 @@ int			pwd(char **av, t_env **env);
 int			unset(char **args, t_env **env);
 int			is_builtin(t_cmd *cmd);
 int			handle_builtin(t_cmd *cmd, t_env **env);
+
+/********** CD UTILS ***********/
+char		*get_fallback_pwd(const char *arg, char *oldpwd);
+char		*get_cd_target(char **av, t_env **env);
 
 /********** EXPORT UTILS ***********/
 int			set_and_assign(char *arg, t_env **env);

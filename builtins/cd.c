@@ -6,21 +6,17 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:23:51 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/05 00:00:00 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:27:34 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-#include <limits.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 static void	print_getcwd_warning(void)
 {
-	ft_putendl_fd(
-		"cd: error retrieving current directory: getcwd: "
-		"cannot access parent directories: No such file or directory",
-		STDERR_FILENO);
+	ft_putendl_fd("cd: error retrieving current directory: getcwd: "
+					"cannot access parent directories: No such file or directory",
+					STDERR_FILENO);
 }
 
 static char	*pop_last(const char *oldpwd)
@@ -52,10 +48,7 @@ static int	update_pwd(t_env **env, char *oldpwd, const char *arg)
 	else
 	{
 		print_getcwd_warning();
-		if (ft_strcmp(arg, "..") == 0)
-			newpwd = pop_last(oldpwd);
-		else
-			newpwd = ft_strdup((char *)oldpwd);
+		newpwd = get_fallback_pwd(arg, oldpwd);
 	}
 	if (!newpwd)
 	{
@@ -72,7 +65,6 @@ static int	update_pwd(t_env **env, char *oldpwd, const char *arg)
 	return (0);
 }
 
-
 int	cd(char **av, t_env **env)
 {
 	char	*target;
@@ -84,18 +76,9 @@ int	cd(char **av, t_env **env)
 		ft_putendl_fd("cd: too many arguments", STDERR_FILENO);
 		return (1);
 	}
-	target = av[1];
-	if (!target || !*target)
-	{
-		target = get_env_value(*env, "HOME");
-		if (!target)
-		{
-			ft_putendl_fd("cd: HOME not set", STDERR_FILENO);
-			return (1);
-		}
-		if (!*target)
-			return (0);
-	}
+	target = get_cd_target(av, env);
+	if (!target)
+		return (1);
 	pwd_env = get_env_value(*env, "PWD");
 	if (pwd_env)
 		oldpwd = ft_strdup((char *)pwd_env);

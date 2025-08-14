@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/14 08:38:48 by zamohame          #+#    #+#             */
+/*   Updated: 2025/08/14 09:33:45 by zamohame         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 void	handle_sigint(int signum)
@@ -11,6 +23,6 @@ void	handle_sigint(int signum)
 
 void	init_signals(void)
 {
-	signal(SIGINT, handle_sigint);  // Ctrl-C
-	signal(SIGQUIT, SIG_IGN);       // Ctrl-backslash
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
 }

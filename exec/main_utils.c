@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:52:50 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/13 20:52:50 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:28:49 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ char	*expand_buffer(char *line, size_t *cap, size_t *len, char c)
 		return (NULL);
 	line[*len] = c;
 	*len += 1;
+	line[*len] = '\0';
 	return (line);
 }
 
@@ -61,9 +62,7 @@ char	*read_line_noninteractive(void)
 	while (1)
 	{
 		r = read(STDIN_FILENO, &c, 1);
-		if (r <= 0)
-			break ;
-		if (c == '\n')
+		if (r <= 0 || c == '\n')
 			break ;
 		line = expand_buffer(line, &cap, &len, c);
 		if (!line)
@@ -74,8 +73,6 @@ char	*read_line_noninteractive(void)
 		free(line);
 		return (NULL);
 	}
-	if (line)
-		line[len] = '\0';
 	return (line);
 }
 

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exp_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 08:26:31 by marvin            #+#    #+#             */
-/*   Updated: 2025/07/21 08:26:31 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/14 09:29:31 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/expend.h"
+#include "../include/expand.h"
 
 int	append_char(char **dst, char c)
 {

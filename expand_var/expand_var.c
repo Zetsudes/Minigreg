@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   expand_var.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lkantzer <lkantzer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 11:10:00 by lkantzer          #+#    #+#             */
-/*   Updated: 2025/06/28 22:15:00 by lkantzer         ###   ########.fr       */
+/*   Updated: 2025/08/14 09:29:40 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/expend.h"
+#include "../include/expand.h"
 
 int	expv_try_cases(const char *in, int *i, t_ctx *c)
 {
