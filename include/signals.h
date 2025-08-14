@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 08:40:56 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/14 09:31:14 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 10:31:37 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,5 +15,6 @@
 
 void	handle_sigint(int signum);
 void	init_signals(void);
+void	handle_sigquit(int signum);
 
 #endif

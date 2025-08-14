@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:23:51 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/14 10:01:21 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/14 10:49:18 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 static void	print_getcwd_warning(void)
 {
 	ft_putendl_fd("cd: error retrieving current directory: getcwd: "
-					"cannot access parent directories: No such file or directory",
-					STDERR_FILENO);
+		"cannot access parent directories: No such file or directory",
+		STDERR_FILENO);
 }
 
 char	*pop_last(const char *oldpwd)
