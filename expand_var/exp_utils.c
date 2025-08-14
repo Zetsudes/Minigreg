@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exp_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:26:31 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:26:31 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/expend.h"
 
 int	append_char(char **dst, char c)
@@ -28,6 +40,7 @@ int	append_char(char **dst, char c)
 	*dst = new;
 	return (1);
 }
+
 int	free_and_fail(char **p)
 {
 	if (*p)
@@ -46,7 +59,9 @@ int	append_str(char **dst, const char *add)
 
 	if (!add)
 		return (1);
-	len = *dst ? ft_strlen(*dst) : 0;
+	len = 0;
+	if (*dst)
+		len = ft_strlen(*dst);
 	al = ft_strlen(add);
 	new = malloc(len + al + 1);
 	if (!new)

@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exp_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/13 12:30:00 by 42                #+#    #+#             */
+/*   Updated: 2025/08/13 12:30:00 by 42               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -20,6 +31,14 @@ void	free_env_list(t_env *head)
 	}
 }
 
+void	*handle_alloc_failure(char *key, char *value, t_env *first)
+{
+	free(key);
+	free(value);
+	free_env_list(first);
+	return (NULL);
+}
+
 /*
 <3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
 <3 Creates a new env node and adds it to the beginning of the list  <3
@@ -32,8 +51,7 @@ int	add_new_env_node(t_env **env, char *key, char *value)
 
 	new = create_node(key, value);
 	if (!new)
-		return (0); // no need to free 'new' or call free_env_list
-
+		return (0);
 	new->next = *env;
 	*env = new;
 	return (1);
@@ -55,10 +73,10 @@ char	*ft_strjoin_3(const char *s1, const char *s2, const char *s3)
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
 	len3 = ft_strlen(s3);
-	result = malloc(len1 + len2 + len3 + 1); // Null terminator <3
+	result = malloc(len1 + len2 + len3 + 1);
 	if (!result)
 		return (NULL);
-	ft_memcpy(result, s1, len1); // Copies each part into result <3
+	ft_memcpy(result, s1, len1);
 	ft_memcpy(result + len1, s2, len2);
 	ft_memcpy(result + len1 + len2, s3, len3);
 	result[len1 + len2 + len3] = '\0';
@@ -81,32 +99,4 @@ int	env_list_size(t_env *env)
 		env = env->next;
 	}
 	return (size);
-}
-
-/*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Fills array with "KEY=VALUE"                                 <3
-<3 Converts list to array                                       <3
-<3 Helper function used in env_to_array() in handle_env.c file  <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-*/
-int	fill_env_array(char **arr, t_env *env)
-{
-	int	i;
-
-	i = 0;
-	while (env)
-	{
-		arr[i] = ft_strjoin_3(env->key, "=", env->value);
-		if (!arr[i])
-		{
-			while (i > 0)
-				free(arr[--i]);
-			return (0);
-		}
-		env = env->next;
-		i++;
-	}
-	arr[i] = NULL;
-	return (1);
 }

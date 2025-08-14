@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_error.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:16:59 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:16:59 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 int	print_syntax_error(const char *tok)
 {
-	const char	*prefix =
-		"minishell: syntax error near unexpected token `";
+	const char	*prefix = "minishell: syntax error near unexpected token `";
 	const char	*suffix = "'\n";
 
 	if (!tok)

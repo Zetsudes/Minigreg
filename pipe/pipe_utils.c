@@ -55,3 +55,24 @@ void	update_fds(int *fd_in, t_pipeline *pipeline, int i)
 		*fd_in = pipeline->pipes[i][0];
 	}
 }
+
+void	execute_external_command(t_cmd *cmd, t_env **env)
+{
+	char	*path;
+	char	**envp;
+
+	envp = env_to_array(*env);
+	if (!envp)
+		exit(1);
+	path = get_path(cmd->args[0], envp);
+	if (!path)
+	{
+		print_error_message(cmd->args, 0, "Command '", "' not found");
+		free_tab(envp);
+		exit(127);
+	}
+	execve(path, cmd->args, envp);
+	perror("execve");
+	free_tab(envp);
+	exit(1);
+}

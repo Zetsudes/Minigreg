@@ -1,40 +1,59 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_args.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 15:30:00 by 42                #+#    #+#             */
+/*   Updated: 2025/08/12 15:30:00 by 42               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
-static int	token_is_quoted(const char *tok)
+/* évite la collision avec lexer.h (handle_operator) */
+static int	handle_redirection(char **tokens, int *j, t_cmd *cmd, t_env *env)
 {
-	while (tok && *tok)
+	char	*op;
+	char	*file;
+	char	*fname;
+
+	op = tokens[*j];
+	file = tokens[*j + 1];
+	if (!file || is_token_operator(file))
 	{
-	if (*tok == '\'' || *tok == '"')
-			return (1);
-		tok++;
+		print_syntax_error(file);
+		return (0);
 	}
-	return (0);
+	fname = process_token(file, env);
+	if (!fname || !set_redirection(cmd, op, fname))
+	{
+		free(fname);
+		return (0);
+	}
+	free(fname);
+	*j += 2;
+	return (1);
 }
 
-char	*process_token(char *tok, t_env *env)
+int	count_effective_args(char **tk, int j, t_env *env)
 {
-	char	*out;
+	int		count;
+	char	*tmp;
 
-	if (!tok)
-		return (ft_strdup(""));
-	out = expand_var(tok, env);
-	if (!out)
-		out = ft_strdup("");
-	return (out);
-}
-
-static int      count_effective_args(char **tk, int j, t_env *env)
-{
-	int count = 0;
-	while (tk[j] && ft_strcmp(tk[j], "|") && ft_strcmp(tk[j], ";"))
+	count = 0;
+	while (tk[j] && !is_sep(tk[j]))
 	{
 		if (is_token_operator(tk[j]))
 		{
 			j += 2;
-			continue;
+			continue ;
 		}
-		char *tmp = process_token(tk[j], env);
-		if (tmp && (tmp[0] != '\0' || token_is_quoted(tk[j])))
+		tmp = process_token(tk[j], env);
+		if (tmp && (tmp[0] != '\0'
+				|| token_is_quoted(tk[j])
+				|| is_empty_quotes(tk[j])))
 			count++;
 		free(tmp);
 		j++;
@@ -42,57 +61,59 @@ static int      count_effective_args(char **tk, int j, t_env *env)
 	return (count);
 }
 
-char    **copy_args(char **tokens, int *i, t_cmd *cmd, t_env *env)
+int	token_is_quoted(const char *s)
 {
-	int     j;
-	int     count;
-	char    **args;
-	int     k;
+	char		q;
+	const char	*start;
+
+	while (*s)
+	{
+		if (*s == '\'' || *s == '"')
+		{
+			q = *s;
+			s++;
+			start = s;
+			while (*s && *s != q)
+				s++;
+			if (*s == q && s - start > 0)
+				return (1);
+		}
+		else
+			s++;
+	}
+	return (0);
+}
+
+static int	handle_redir_token(char **tokens, int *j, t_cmd *cmd, t_env *env)
+{
+	if (!handle_redirection(tokens, j, cmd, env))
+		return (0);
+	if (cmd->redir_error)
+		skip_to_sep(j, tokens);
+	return (1);
+}
+
+char	**copy_args(char **tokens, int *i, t_cmd *cmd, t_env *env)
+{
+	int		j;
+	int		k;
+	char	**args;
 
 	j = *i;
-	count = count_effective_args(tokens, j, env);
-	args = malloc(sizeof(char *) * (count + 1));
+	args = malloc(sizeof(char *)
+			* (count_effective_args(tokens, j, env) + 1));
 	if (!args)
 		return (NULL);
 	k = 0;
-	while (tokens[j] && ft_strcmp(tokens[j], "|") && ft_strcmp(tokens[j], ";"))
+	while (tokens[j] && !is_sep(tokens[j]))
 	{
 		if (is_token_operator(tokens[j]))
 		{
-			char *op = tokens[j];
-			char *file = tokens[j + 1];
-			if (!file || is_token_operator(file))
-			{
-				print_syntax_error(file);
-				while (k-- > 0)
-					free(args[k]);
-				free(args);
-				return (NULL);
-			}
-			char *fname = process_token(file, env);
-			if (!fname || !set_redirection(cmd, op, fname))
-			{
-				while (k-- > 0)
-					free(args[k]);
-				free(args);
-				free(fname);
-				return (NULL);
-			}
-			free(fname);
-			j += 2;
-			if (cmd->redir_error)
-			{
-				while (tokens[j] && ft_strcmp(tokens[j], "|") && ft_strcmp(tokens[j], ";"))
-					j++;
-				break;
-			}
-			continue;
+			if (!handle_redir_token(tokens, &j, cmd, env))
+				return (free_args_partial(args, k), NULL);
+			continue ;
 		}
-		char *tmp = process_token(tokens[j], env);
-		if (tmp && (tmp[0] != '\0' || token_is_quoted(tokens[j])))
-			args[k++] = tmp;
-		else
-			free(tmp);
+		add_piece(args, &k, tokens[j], env);
 		j++;
 	}
 	args[k] = NULL;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exp_dollar.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:25:20 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:25:20 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/expend.h"
 
 int	handle_dollar(const char *in, int *i, char **out, t_env *env)
@@ -12,7 +24,7 @@ int	handle_dollar(const char *in, int *i, char **out, t_env *env)
 		if (!val)
 			val = "0";
 		(*i)++;
-		return (append_str(out, "?"));
+		return (append_str(out, val));
 	}
 	if (!ft_isalpha(in[*i]) && in[*i] != '_')
 		return (append_char(out, '$'));

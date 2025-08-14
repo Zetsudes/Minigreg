@@ -59,8 +59,10 @@ int	expand_core(const char *in, char **out, t_env *env)
 	c.env = env;
 	i = 0;
 	while (in[i])
+	{
 		if (!expv_process_char(in, &i, &c))
 			return (0);
+	}
 	return (1);
 }
 

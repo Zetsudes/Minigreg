@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_path.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/13 13:12:00 by 42                #+#    #+#             */
+/*   Updated: 2025/08/13 13:12:00 by 42               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../include/minishell.h"
 
 /*
@@ -14,15 +24,40 @@ char	*find_path(char **dir, char *cmd)
 	char	*final_path;
 
 	i = 0;
-	while (dir[i]) // Checks each directory in PATH <3
+	while (dir[i])
 	{
-		tmp = ft_strjoin(dir[i], "/"); // Builds full path -> directory + "/" + command <3
+		tmp = ft_strjoin(dir[i], "/");
 		final_path = ft_strjoin(tmp, cmd);
 		free(tmp);
-		if (access(final_path, F_OK | X_OK) == 0) // Checks if file exists and is executable <3
+		if (access(final_path, F_OK | X_OK) == 0)
 			return (final_path);
 		free(final_path);
 		i++;
+	}
+	return (NULL);
+}
+
+/*
+<3 Checks if command contains '/' or starts with '.' <3
+<3 Returns a copy of cmd if valid, NULL otherwise    <3
+*/
+static char	*check_direct_cmd(char *cmd)
+{
+	DIR	*dir;
+
+	if (ft_strchr(cmd, '/') || cmd[0] == '.')
+	{
+		if (access(cmd, F_OK) == 0)
+		{
+			dir = opendir(cmd);
+			if (dir)
+			{
+				closedir(dir);
+				return (ft_strdup(cmd));
+			}
+			return (ft_strdup(cmd));
+		}
+		return (NULL);
 	}
 	return (NULL);
 }
@@ -34,29 +69,22 @@ char	*find_path(char **dir, char *cmd)
 */
 char	*get_path(char *cmd, char **env)
 {
-	int i;
-	char *path;
-	char **dir;
-	char *final_path;
+	int		i;
+	char	*path;
+	char	**dir;
+	char	*final_path;
 
+	final_path = check_direct_cmd(cmd);
+	if (final_path)
+		return (final_path);
 	i = 0;
-	if (ft_strchr(cmd, '/') || cmd[0] == '.')
-	{
-		if (access(cmd, F_OK) == 0)
-		{
-			if (opendir(cmd))
-				return (NULL);
-			return (ft_strdup(cmd));
-		}
-		return (NULL);
-	}
-	while (env[i] && ft_strncmp(env[i], "PATH=", 5)) // Finds PATH env var <3
+	while (env[i] && ft_strncmp(env[i], "PATH=", 5))
 		i++;
 	if (!env[i])
 		return (NULL);
-	path = env[i] + 5; // Skips "PATH=" <3
-	dir = ft_split(path, ':'); // Splits PATH by ':' <3
-	final_path = find_path(dir, cmd); // Searches through directories <3
+	path = env[i] + 5;
+	dir = ft_split(path, ':');
+	final_path = find_path(dir, cmd);
 	free_tab(dir);
 	return (final_path);
 }

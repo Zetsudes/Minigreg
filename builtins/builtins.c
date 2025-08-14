@@ -1,10 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:07:29 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:07:29 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the echo builtin command   <3
-<3 echo -n = NO newline, echo = newline         <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the echo builtin command.
+** echo -n = no newline; echo = newline.
 */
 int	echo(char **args)
 {
@@ -12,10 +22,10 @@ int	echo(char **args)
 	int	newline;
 
 	i = 1;
-	newline = 1; // Assuming there's no -n flag <3
+	newline = 1;
 	while (args[i] && is_valid_n_flag(args[i]))
 	{
-		newline = 0; // If we find one then bye bye newline </3
+		newline = 0;
 		i++;
 	}
 	while (args[i])
@@ -25,18 +35,14 @@ int	echo(char **args)
 			write(STDOUT_FILENO, " ", 1);
 		i++;
 	}
-	// printf("miaou");
-		// Test to confirm this function is being executed and not execve <3
 	if (newline)
 		write(STDOUT_FILENO, "\n", 1);
 	return (0);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the env builtin command                  <3
-<3 Prints all env var that have a VALUE like this : KEY=VALUE <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the env builtin command.
+** Prints all env vars that have a value as KEY=VALUE.
 */
 int	env_builtin(t_env *env)
 {
@@ -45,7 +51,7 @@ int	env_builtin(t_env *env)
 	tmp = env;
 	while (tmp)
 	{
-		if (tmp->value)
+		if (tmp->value && ft_strcmp(tmp->key, "?") != 0)
 			printf("%s=%s\n", tmp->key, tmp->value);
 		tmp = tmp->next;
 	}
@@ -53,74 +59,83 @@ int	env_builtin(t_env *env)
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the exit builtin command       <3
-<3 Does not exit if there's more than two arguments <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the exit builtin command.
+** Does not exit if there are more than two arguments.
 */
 int	exit_builtin(char **args)
 {
 	int	exit_code;
 
 	exit_code = 0;
-	write(1, "exit\n", 5);
+	if (isatty(STDIN_FILENO))  // Only print "exit" if stdin is a terminal
+		write(1, "exit\n", 5);
 	if (!args[1])
 		exit(0);
 	if (!is_numeric(args[1]))
 	{
-		ft_putstr_fd("exit: ", 2);
-		ft_putstr_fd(args[1], 2);
-		ft_putendl_fd(": numeric argument required", 2);
+		print_error_message(args, 1, "exit: ", ": numeric argument required");
 		exit(2);
 	}
 	exit_code = atoi(args[1]);
-	if (args[2]) // Too many arguments : prints error but doesn't exit <3
+	if (args[2])
 	{
 		write(2, "exit: too many arguments\n", 25);
 		return (1);
 	}
 	if (exit_code > 255)
-		exit_code = exit_code % 256; // If number is bigger than 255, bash only keeps the lower 8 bits <3
-	exit(exit_code); // Exits with the specified code <3
+		exit_code = exit_code % 256;
+	exit(exit_code);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the pwd builtin command      <3
-<3 Gets and prints the current working directory  <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the pwd builtin command.
+** Gets and prints the current working directory.
 */
-int	pwd(void)
+int	pwd(char **av, t_env **env)
 {
-	char	cwd[PATH_MAX];
+	char	buf[PATH_MAX];
+	char	*pwd;
 
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-	{
-		ft_printf("%s\n", cwd);
-		return (0);
-	}
+	(void)av;
+	if (getcwd(buf, sizeof(buf)))
+		ft_putendl_fd(buf, STDOUT_FILENO);
 	else
-		perror("getcwd()");
-	return (1);
+	{
+		pwd = get_env_value(*env, "PWD");
+		if (pwd)
+			ft_putendl_fd(pwd, STDOUT_FILENO);
+		else
+		{
+			perror("pwd");
+			return (1);
+		}
+	}
+	return (0);
 }
 
 /*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Implementation of the unset builtin command  <3
-<3 Removes environment variable(s) from env     <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
+** Implementation of the unset builtin command.
+** Removes environment variable(s) from env.
 */
 int	unset(char **args, t_env **env)
 {
 	int	i;
+	int	status;
 
 	if (!args[1])
 		return (0);
 	i = 1;
+	status = 0;
 	while (args[i])
 	{
-		unset_single_var(env, args[i]);
+		if (!is_valid_identifier(args[i]) || args[i][0] == '\0')
+		{
+			print_error_message(args, i, "unset: `", "': not a valid identifier");
+			status = 1;
+		}
+		else
+			unset_single_var(env, args[i]);
 		i++;
 	}
-	return (0); // Always succeeds, never returns error <3
+	return (status);
 }

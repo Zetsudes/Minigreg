@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   process_segment.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/12 14:10:00 by 42                #+#    #+#             */
+/*   Updated: 2025/08/12 14:10:00 by 42               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 t_cmd	*init_cmd(void)
@@ -18,27 +30,19 @@ t_cmd	*init_cmd(void)
 	return (cmd);
 }
 
-
-int	process_segment(t_cmd **head, t_cmd **cur, char **tk, int *i, t_env *env)
+/* Retourne le nouveau segment, ou NULL en cas d'erreur */
+t_cmd	*process_segment(char **tk, int *i, t_env *env)
 {
-	t_cmd	*new;
+	t_cmd	*newc;
 
-	new = init_cmd();
-	if (!new)
+	newc = init_cmd();
+	if (!newc)
+		return (NULL);
+	newc->args = copy_args(tk, i, newc, env);
+	if (!newc->args)
 	{
-		free_cmd_list(*head);
-		return (1);
+		free(newc);
+		return (NULL);
 	}
-	if (!*head)
-		*head = new;
-	else
-		(*cur)->next = new;
-	*cur = new;
-	new->args = copy_args(tk, i, new, env);
-	if (!new->args)
-	{
-		free_cmd_list(*head);
-		return (1);
-	}
-	return (0);
+	return (newc);
 }

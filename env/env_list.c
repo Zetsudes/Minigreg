@@ -1,11 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_list.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: 42 <marvin@student.42.fr>                   +#+  +:+       +#+       */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/13 12:00:00 by 42                #+#    #+#             */
+/*   Updated: 2025/08/13 12:00:00 by 42               ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-/*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Creates new env var node with given key and value  <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-*/
 t_env	*create_node(char *key, char *value)
 {
 	t_env	*node;
@@ -13,16 +19,16 @@ t_env	*create_node(char *key, char *value)
 	node = malloc(sizeof(t_env));
 	if (!node)
 		return (NULL);
-	node->key = ft_strdup(key); // Duplicates the key <3
+	node->key = ft_strdup(key);
 	if (!node->key)
 	{
 		free(node);
 		return (NULL);
 	}
 	if (value)
-		node->value = ft_strdup(value); // Duplicates the value <3
+		node->value = ft_strdup(value);
 	else
-		node->value = ft_strdup(""); // If value is NULL <3
+		node->value = ft_strdup("");
 	if (!node->value)
 	{
 		free(node->key);
@@ -32,12 +38,7 @@ t_env	*create_node(char *key, char *value)
 	node->next = NULL;
 	return (node);
 }
-/*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Gets the value from the split result of 'VAR=value'  <3
-<3 Helper function used in handle_var() below           <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-*/
+
 char	*get_split_value(char **split, t_env *first)
 {
 	if (!split)
@@ -45,50 +46,38 @@ char	*get_split_value(char **split, t_env *first)
 		free_env_list(first);
 		return (NULL);
 	}
-	if (!split[0] || split[0][0] == '\0') // No key name </3
+	if (!split[0] || split[0][0] == '\0')
 	{
 		free_tab(split);
 		return (NULL);
 	}
-	if (split[1] == NULL) // No value (VAR=) </3
+	if (split[1] == NULL)
 		return ("");
 	return (split[1]);
 }
 
-/*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Parses env string ("VAR=value") and creates env node <3
-<3 Used to process env var and create a node            <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-*/
 t_env	*handle_var(char *env_str, t_env *first)
 {
 	t_env	*new_node;
+	char	*eq;
+	char	*key;
 	char	*value;
-	char	**split;
 
-	split = ft_split(env_str, '=');       
-		// Splits at '=' to get key and value <3
-	value = get_split_value(split, first); // Validates value and gets it <3
-	if (!value)
-		return (NULL);
-	new_node = create_node(split[0], value);
-		// Creates node with key and value <3
-	free_tab(split);
+	eq = ft_strchr(env_str, '=');
+	if (!eq)
+		return (create_node(env_str, ""));
+	key = ft_substr(env_str, 0, eq - env_str);
+	value = ft_strdup(eq + 1);
+	if (!key || !value)
+		return (handle_alloc_failure(key, value, first));
+	new_node = create_node(key, value);
+	free(key);
+	free(value);
 	if (!new_node)
-	{
-		free_env_list(first);
-		return (NULL);
-	}
+		return (handle_alloc_failure(NULL, NULL, first));
 	return (new_node);
 }
 
-/*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Adds new node to env linked list                         <3
-<3 Keeps track of first and last nodes for better appending <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-*/
 void	add_node(t_env **first, t_env **last, t_env *new_node)
 {
 	if (!*first)
@@ -103,18 +92,12 @@ void	add_node(t_env **first, t_env **last, t_env *new_node)
 	}
 }
 
-/*
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-<3 Initializes env linked list from envp array                          <3
-<3 Converts the array of strings "PATH=/usr/bin" into a linked list     <3
-<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3<3
-*/
 t_env	*init_list(char **envp)
 {
-	int i;
-	t_env *first;
-	t_env *last;
-	t_env *new_node;
+	int		i;
+	t_env	*first;
+	t_env	*last;
+	t_env	*new_node;
 
 	if (!envp || !envp[0])
 		return (init_minimal_env());
@@ -123,10 +106,10 @@ t_env	*init_list(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		new_node = handle_var(envp[i], first); // Parses and creates node <3
+		new_node = handle_var(envp[i], first);
 		if (!new_node)
 			return (NULL);
-		add_node(&first, &last, new_node); // Add to list <3
+		add_node(&first, &last, new_node);
 		i++;
 	}
 	return (first);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lex_handlers1.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/21 08:24:34 by marvin            #+#    #+#             */
+/*   Updated: 2025/07/21 08:24:34 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 int	handle_space(const char *ln, size_t *i, t_lexer *lx)
@@ -23,7 +35,7 @@ int	handle_operator(const char *ln, size_t *i, t_lexer *lx)
 	return (2);
 }
 
-int  handle_paren(const char *ln, size_t *i, t_lexer *lx)
+int	handle_paren(const char *ln, size_t *i, t_lexer *lx)
 {
 	if (lx->st == GENERAL && (ln[*i] == '(' || ln[*i] == ')'))
 	{
