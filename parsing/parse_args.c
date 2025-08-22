@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 15:30:00 by 42                #+#    #+#             */
-/*   Updated: 2025/08/14 09:32:27 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:19:52 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-/* évite la collision avec lexer.h (handle_operator) */
 static int	handle_redirection(char **tokens, int *j, t_cmd *cmd, t_env *env)
 {
 	char	*op;
@@ -47,6 +46,8 @@ int	count_effective_args(char **tk, int j, t_env *env)
 	{
 		if (is_token_operator(tk[j]))
 		{
+			if (!tk[j + 1])
+				break;
 			j += 2;
 			continue ;
 		}
