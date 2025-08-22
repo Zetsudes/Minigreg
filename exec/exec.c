@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:51:51 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/14 10:31:52 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/22 17:17:18 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	execute_single_command(t_cmd *cmd, t_env **env)
 	int		fd_out;
 	int		setup_result;
 
-	setup_result = setup_and_validate_command(cmd, &fd_in, &fd_out);
+	setup_result = setup_and_validate_command(cmd, *env, &fd_in, &fd_out);
 	if (setup_result != -1)
 		return (setup_result);
 	if (is_builtin(cmd))

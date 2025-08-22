@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:47:32 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/14 09:56:05 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/22 17:37:57 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ int		execute_command_sequence(t_cmd *cmd_list, t_env **env);
 
 /* ---------- COMMAND UTILS ---------- */
 void	validate_path(char *path, char **envp);
-int		setup_and_validate_command(t_cmd *cmd, int *fd_in, int *fd_out);
+int		setup_and_validate_command(t_cmd *cmd,
+			t_env *env, int *fd_in, int *fd_out);
 int		process_command_group(t_cmd *cmd_list, t_env **env);
 void	save_fds(int fd_in, int fd_out, int saved[2]);
 
@@ -52,8 +53,8 @@ char	*get_path(char *cmd, char **envp);
 char	*find_path(char **dir, char *cmd);
 
 /* ---------- REDIRECTIONS & UTILITAIRES ---------- */
-int		handle_heredoc(t_cmd *cmd);
-int		handle_input_redirection(t_cmd *cmd, int *fd_in);
+int		heredoc_to_fd(const char *lim_raw, t_env *env);
+int		handle_input_redirection(t_cmd *cmd, t_env *env, int *fd_in);
 int		handle_output_redirection(t_cmd *cmd, int fd_in, int *fd_out);
 int		process_heredoc_line(char *line, char *limiter, int write_fd);
 

@@ -9,6 +9,7 @@ SRC = env/env_list.c \
 	  env/env_utils.c \
 	  env/handle_env.c \
 	  exec/main.c \
+	  exec/heredoc.c \
 	  exec/main_utils.c \
 	  exec/exec.c \
 	  exec/command_utils.c \

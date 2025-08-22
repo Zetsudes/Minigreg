@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:49:12 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/14 09:56:00 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/22 17:18:17 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,13 @@ void	validate_path(char *path, char **envp)
 	}
 }
 
-int	setup_and_validate_command(t_cmd *cmd, int *fd_in, int *fd_out)
+int	setup_and_validate_command(t_cmd *cmd, t_env *env, int *fd_in, int *fd_out)
 {
 	if (cmd->redir_error)
 		return (1);
 	*fd_in = STDIN_FILENO;
 	*fd_out = STDOUT_FILENO;
-	if (handle_input_redirection(cmd, fd_in))
+	if (handle_input_redirection(cmd, env, fd_in))
 		return (1);
 	if (handle_output_redirection(cmd, *fd_in, fd_out))
 		return (1);

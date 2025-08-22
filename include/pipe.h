@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 08:41:03 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/14 09:31:05 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/22 17:24:43 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int						init_pipes(t_pipeline *pipeline);
 pid_t					*init_pipeline_resources(t_pipeline *pipeline);
 int						setup_pipeline(t_cmd *cmd_list, t_pipeline *pipeline,
 							t_env **env);
-int						setup_input_fd(t_cmd *cmd, int fd_in);
+int						setup_input_fd(t_cmd *cmd, t_env *env, int fd_in);
 int						setup_output_fd(t_cmd *cmd, int cmd_index,
 							t_pipeline *pipeline);
 

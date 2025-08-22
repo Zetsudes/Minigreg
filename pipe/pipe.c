@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 08:39:08 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/14 09:33:37 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/22 17:38:43 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,21 @@ int	init_pipes(t_pipeline *pipeline)
 	return (0);
 }
 
-int	setup_input_fd(t_cmd *cmd, int fd_in)
+int	setup_input_fd(t_cmd *cmd, t_env *env, int fd_in)
 {
 	if (cmd->heredoc)
-		return (handle_heredoc(cmd));
+	{
+		fd_in = heredoc_to_fd(cmd->infile, env);
+		if (fd_in < 0)
+			return (-1);
+	}
 	else if (cmd->infile)
 	{
 		fd_in = open(cmd->infile, O_RDONLY);
 		if (fd_in < 0)
 		{
 			perror(cmd->infile);
-			exit(1);
+			return (-1);
 		}
 	}
 	return (fd_in);
@@ -106,7 +110,9 @@ void	execute_pipeline_command(t_pipeline *pipeline, int cmd_index, int fd_in,
 	cmd = pipeline->cmds[cmd_index];
 	if (cmd->redir_error)
 		exit(1);
-	fd_in = setup_input_fd(cmd, fd_in);
+	fd_in = setup_input_fd(cmd, *env, fd_in);
+	if (fd_in < 0)
+		exit(1);
 	fd_out = setup_output_fd(cmd, cmd_index, pipeline);
 	if (fd_in != STDIN_FILENO)
 	{

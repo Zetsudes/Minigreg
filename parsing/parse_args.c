@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 15:30:00 by 42                #+#    #+#             */
-/*   Updated: 2025/08/22 16:19:52 by marvin           ###   ########.fr       */
+/*   Updated: 2025/08/22 17:34:54 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int	count_effective_args(char **tk, int j, t_env *env)
 		if (is_token_operator(tk[j]))
 		{
 			if (!tk[j + 1])
-				break;
+				break ;
 			j += 2;
 			continue ;
 		}
