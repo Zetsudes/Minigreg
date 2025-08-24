@@ -17,6 +17,8 @@
 # define YELLOW "\033[1;33m\002"
 # define RESET "\001\033[0m\002"
 
+extern int g_signal_exit;
+
 # include "../greg_lib/libft.h"
 # include "builtins.h"
 # include "env.h"

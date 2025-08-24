@@ -108,6 +108,8 @@ int	execute_builtin(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 */
 void	run_child_process(t_cmd *cmd, t_env **env, int fd_in, int fd_out)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (fd_in != STDIN_FILENO)
 	{
 		dup2(fd_in, STDIN_FILENO);

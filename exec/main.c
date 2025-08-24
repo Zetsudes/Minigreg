@@ -27,6 +27,11 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = get_input_line(prompt);
+		if (g_signal_exit != 0)
+		{
+			set_env_value(&env, "?", ft_itoa(g_signal_exit));
+			g_signal_exit = 0; 
+		}
 		if (!line)
 			break ;
 		if (*line)
