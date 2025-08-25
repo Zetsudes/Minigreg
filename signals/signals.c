@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-int g_signal_exit = 0;
+int	g_signal_exit = 0;
 
 void	handle_sigint(int signum)
 {
@@ -23,10 +23,10 @@ void	handle_sigint(int signum)
 	rl_on_new_line();
 }
 
-void handle_sigquit(int signum)
+void	handle_sigquit(int signum)
 {
 	(void)signum;
-	g_signal_exit = 131; 
+	g_signal_exit = 131;
 	write(1, "Quit (core dumped)\n", 19);
 }
 

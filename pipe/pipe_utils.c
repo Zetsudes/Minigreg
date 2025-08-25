@@ -15,6 +15,8 @@
 int	run_parent_process(pid_t pid, int fd_in, int fd_out)
 {
 	int	status;
+	int	g_signal_exit;
+	int	sig;
 
 	g_signal_exit = 0;
 	if (fd_in != STDIN_FILENO)
@@ -24,12 +26,11 @@ int	run_parent_process(pid_t pid, int fd_in, int fd_out)
 	waitpid(pid, &status, 0);
 	if (g_signal_exit != 0)
 		return (g_signal_exit);
-		
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	else if (WIFSIGNALED(status))
 	{
-		int sig = WTERMSIG(status);
+		sig = WTERMSIG(status);
 		return (128 + sig);
 	}
 	return (1);
