@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:57:19 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/14 09:28:36 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/26 11:01:00 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,10 +90,11 @@ void	exec_command(t_cmd *cmd, t_env **env)
 	handle_execve_error(cmd, envp);
 }
 
-int wait_for_children(t_pipeline *pipeline, pid_t *pids)
+int	wait_for_children(t_pipeline *pipeline, pid_t *pids)
 {
 	int	status;
 	int	exit_status;
+	int	sig;
 	int	i;
 
 	g_signal_exit = 0;
@@ -102,6 +103,14 @@ int wait_for_children(t_pipeline *pipeline, pid_t *pids)
 	while (i < pipeline->cmd_count)
 	{
 		waitpid(pids[i], &status, 0);
+		if (WIFSIGNALED(status))
+		{
+			sig = WTERMSIG(status);
+			if (sig == SIGQUIT)
+				write(1, "Quit (core dumped)\n", 19);
+			else if (sig == SIGINT)
+				write(1, "\n", 1);
+		}
 		if (i == pipeline->cmd_count - 1)
 			exit_status = get_exit_status(status);
 		i++;

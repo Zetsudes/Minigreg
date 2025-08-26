@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 20:57:33 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/14 09:28:55 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/26 11:02:37 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	main(int argc, char **argv, char **envp)
 		if (g_signal_exit != 0)
 		{
 			set_env_value(&env, "?", ft_itoa(g_signal_exit));
-			g_signal_exit = 0; 
+			g_signal_exit = 0;
 		}
 		if (!line)
 			break ;
@@ -39,5 +39,4 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 	}
 	free_env_list(env);
-	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: zamohame <zamohame@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/14 08:39:14 by zamohame          #+#    #+#             */
-/*   Updated: 2025/08/14 09:33:32 by zamohame         ###   ########.fr       */
+/*   Updated: 2025/08/26 11:00:17 by zamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,25 +15,26 @@
 int	run_parent_process(pid_t pid, int fd_in, int fd_out)
 {
 	int	status;
-	int	g_signal_exit;
+	int	exit_status;
 	int	sig;
 
-	g_signal_exit = 0;
 	if (fd_in != STDIN_FILENO)
 		close(fd_in);
 	if (fd_out != STDOUT_FILENO)
 		close(fd_out);
-	waitpid(pid, &status, 0);
-	if (g_signal_exit != 0)
-		return (g_signal_exit);
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	else if (WIFSIGNALED(status))
+	g_signal_exit = 0;
+	if (waitpid(pid, &status, 0) == -1)
+		return (1);
+	if (WIFSIGNALED(status))
 	{
 		sig = WTERMSIG(status);
-		return (128 + sig);
+		if (sig == SIGQUIT)
+			write(2, "Quit (core dumped)\n", 19);
+		else if (sig == SIGINT)
+			write(2, "\n", 1);
 	}
-	return (1);
+	exit_status = get_exit_status(status);
+	return (exit_status);
 }
 
 int	setup_pipeline(t_cmd *cmd_list, t_pipeline *pipeline, t_env **env)
